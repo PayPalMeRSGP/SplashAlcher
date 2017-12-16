@@ -21,7 +21,7 @@ public class StunErrorNode implements ExecutableNode, Comparable<ExecutableNode>
     }
 
     @Override
-    public void decreaseKey() {
+    public void attemptDecreaseKey() {
 
     }
 

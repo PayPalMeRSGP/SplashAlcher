@@ -1,6 +1,7 @@
 package Nodes;
 
 import ScriptClasses.ConstantsAndStatics;
+import org.osbot.Con;
 import org.osbot.rs07.api.Magic;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Spells;
@@ -10,9 +11,9 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
 
     private final int BASE_STARTING_KEY = 0;
     private int currentKey = BASE_STARTING_KEY;
-
-
     private static AlchNode alchNodeSingleton;
+
+    private int alchsLeft = 0;
 
     private AlchNode(){
 
@@ -20,28 +21,26 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
 
     public static AlchNode getAlchNodeInstance() {
         if(alchNodeSingleton == null){
-            ConstantsAndStatics.hostScriptReference.log("creating new alchNodeSingleton");
+            //ConstantsAndStatics.hostScriptReference.log("creating new alchNodeSingleton");
             alchNodeSingleton = new AlchNode();
         }
         else{
-            ConstantsAndStatics.hostScriptReference.log("using old new alchNodeSingleton");
+            //ConstantsAndStatics.hostScriptReference.log("using old alchNodeSingleton");
         }
 
         return alchNodeSingleton;
     }
 
-
-
     @Override
     public int executeNodeAction() throws InterruptedException {
         Magic m = ConstantsAndStatics.hostScriptReference.getMagic();
-        if(m.canCast(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
+        if(canCastAlch()){
             m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
             MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(ConstantsAndStatics.BETWEEN_ALCH_MEAN_MS, ConstantsAndStatics.BETWEEN_ALCH_STDDEV_MS));
             if(m.isSpellSelected()){
-                ConstantsAndStatics.hostScriptReference.getInventory().interact("Cast","Magic longbow");
+                ConstantsAndStatics.hostScriptReference.getInventory().interact("Cast", ConstantsAndStatics.DEBUG_ITEM);
             }
-            MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(ConstantsAndStatics.RS_GAME_TICK_MS, 80));
+
             if(ConstantsAndStatics.hoverOverStun(ConstantsAndStatics.hostScriptReference)){
                 return (int) ConstantsAndStatics.randomNormalDist(30, 3);
             }
@@ -50,13 +49,27 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
         return 0;
     }
 
+    private boolean canCastAlch() throws InterruptedException {
+        Magic m = ConstantsAndStatics.hostScriptReference.getMagic();
+        alchsLeft--;
+        if(alchsLeft <= 0){
+            if(m.canCast(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
+                alchsLeft = 100;
+                return true;
+            }
+            return false;
+
+        }
+        return true;
+    }
+
     @Override
     public void increaseKey() {
         this.currentKey++;
     }
 
     @Override
-    public void decreaseKey() {
+    public void attemptDecreaseKey() {
         if (!(currentKey < 0)){
             this.currentKey--;
         }
@@ -79,7 +92,17 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
 
     @Override
     public int compareTo(ExecutableNode o) {
-        return o.getKey() - this.getKey();
+        int diff = this.getKey() - o.getKey();
+        if(diff == 0){
+            if(o instanceof AlchErrorNode){
+                return 1;/*if tie, give priority to the other node, which is an error node (hopefully)
+                           because if a tie exists between an alch error or alch node. We do alch error first then an successful alch to
+                           emulate a player making a mistake then correcting it.
+                          */
+            }
+        }
+        return diff;
+
     }
 
     @Override
