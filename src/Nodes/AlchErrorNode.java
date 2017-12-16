@@ -72,7 +72,7 @@ public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode>
                 m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
                 MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(80, 8));
                 mouse.click(randX, randY, false); //deselect
-                MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(1000, 200));
+                MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(1000, 200)); //pause to emulate player realizing that he just alched nothing
                 return m.open(); //reopen magic tab
             }
         }
