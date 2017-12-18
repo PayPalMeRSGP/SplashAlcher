@@ -49,7 +49,7 @@ public class PriorityQueueWrapper {
             else if(nextNode instanceof AlchErrorNode || nextNode instanceof StunErrorNode){
                 resetPQ(); //set keys of all nodes back to default values to resume normal alch->stun->alch... operation
             }
-            debugPQ();
+            //debugPQ();
             return nextNode.executeNodeAction(); //returns the sleep time for onLoop()
 
         }

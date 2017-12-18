@@ -38,7 +38,7 @@ public class StunAlchScriptEntryPoint extends Script {
         int currentLevel = this.getSkills().getDynamic(Skill.MAGIC);
 
         iiIiiiiiIiIi.drawString("currentLevel: " + formatValue(currentLevel), 10, 225);
-        iiIiiiiiIiIi.drawString("casted " + spellCycles + " stuns and alchs", 10, 245);
+        iiIiiiiiIiIi.drawString("casted " + spellCycles + " stuns/alchs", 10, 245);
         iiIiiiiiIiIi.drawString("gainedXp: " + formatValue(gainedXp), 10, 265);
         iiIiiiiiIiIi.drawString("XP/H: " + formatValue(XPH), 10, 285);
         iiIiiiiiIiIi.drawString("TTL: " + formatTime(TTL), 10, 305);
