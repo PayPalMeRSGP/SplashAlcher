@@ -25,9 +25,6 @@ public class StunNode implements ExecutableNode, Comparable<ExecutableNode>{
             //ConstantsAndStatics.hostScriptReference.log("creating new stunNodeSingleton");
             stunNodeSingleton = new StunNode();
         }
-        else{
-            //ConstantsAndStatics.hostScriptReference.log("using old stunNodeSingleton");
-        }
 
         return stunNodeSingleton;
     }
@@ -35,7 +32,7 @@ public class StunNode implements ExecutableNode, Comparable<ExecutableNode>{
     @Override
     public int executeNodeAction() throws InterruptedException {
         Magic m = ConstantsAndStatics.hostScriptReference.getMagic();
-        NPC npc = ConstantsAndStatics.hostScriptReference.getNpcs().closest(ConstantsAndStatics.DEBUG_NPC);
+        NPC npc = ConstantsAndStatics.hostScriptReference.getNpcs().closest(ConstantsAndStatics.DEBUG_NPC_ID);
         if(canCastStun()){
             m.castSpellOnEntity(Spells.NormalSpells.STUN, npc);
             if(AlchErrorNode.getAlchErrorNodeInstance().getKey() <= 0){ //alch error is next, let next node handle moving mouse
@@ -54,7 +51,7 @@ public class StunNode implements ExecutableNode, Comparable<ExecutableNode>{
         boolean magicTabOpen = false;
         for(int i = 0; i < 5; i++){ //wait until magic tab reopens from alching
             if(!(ConstantsAndStatics.hostScriptReference.getTabs().getOpen() == Tab.MAGIC)){
-                MethodProvider.sleep(603); //rs game tick ms
+                MethodProvider.sleep(ConstantsAndStatics.RS_GAME_TICK_MS); //rs game tick ms
             }
             else{
                 magicTabOpen = true;

@@ -6,11 +6,12 @@ import org.osbot.rs07.script.ScriptManifest;
 
 import java.awt.*;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "stunAlcher v_Alpha", info = "Alpha: Stun Alch", version = 0.13, logo = "")
+@ScriptManifest(author = "PayPalMeRSGP", name = "IRONMAN stun-alcher", info = "cast stun and alchs for high xph", version = 0.2, logo = "")
 public class StunAlchScriptEntryPoint extends Script {
 
-    PriorityQueueWrapper pqw;
+    private PriorityQueueWrapper pqw;
     private long startTime;
+    private int spellCycles = 0;
     @Override
     public void onStart() throws InterruptedException {
         super.onStart();
@@ -36,7 +37,8 @@ public class StunAlchScriptEntryPoint extends Script {
         long TTL = this.getExperienceTracker().getTimeToLevel(Skill.MAGIC);
         int currentLevel = this.getSkills().getDynamic(Skill.MAGIC);
 
-        iiIiiiiiIiIi.drawString("currentLevel: " + formatValue(currentLevel), 10, 245);
+        iiIiiiiiIiIi.drawString("currentLevel: " + formatValue(currentLevel), 10, 225);
+        iiIiiiiiIiIi.drawString("casted " + spellCycles + " stuns and alchs", 10, 245);
         iiIiiiiiIiIi.drawString("gainedXp: " + formatValue(gainedXp), 10, 265);
         iiIiiiiiIiIi.drawString("XP/H: " + formatValue(XPH), 10, 285);
         iiIiiiiiIiIi.drawString("TTL: " + formatTime(TTL), 10, 305);
@@ -54,4 +56,12 @@ public class StunAlchScriptEntryPoint extends Script {
                 : (l > 1000) ? String.format("%.1fk", ((double) l / 1000))
                 : l + "";
     }
+
+    public void incrementSpellCycles(){
+        this.spellCycles++;
+    }
+
+
+
+
 }

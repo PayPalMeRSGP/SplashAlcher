@@ -21,13 +21,8 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
 
     public static AlchNode getAlchNodeInstance() {
         if(alchNodeSingleton == null){
-            //ConstantsAndStatics.hostScriptReference.log("creating new alchNodeSingleton");
             alchNodeSingleton = new AlchNode();
         }
-        else{
-            //ConstantsAndStatics.hostScriptReference.log("using old alchNodeSingleton");
-        }
-
         return alchNodeSingleton;
     }
 

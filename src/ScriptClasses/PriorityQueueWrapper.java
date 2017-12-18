@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 public class PriorityQueueWrapper {
     private PriorityQueue<ExecutableNode> pq;
 
-    public PriorityQueueWrapper(){
+    PriorityQueueWrapper(){
         setUpPQ();
     }
 
@@ -19,6 +19,7 @@ public class PriorityQueueWrapper {
         alchNodeSingleton.setKey(stunNodeKey);
         stunNodeSingleton.setKey(alchNodeKey);
 
+        //pq doesn't update until the nodes with changed keys are removed and re-added
         this.pq.remove(alchNodeSingleton);
         this.pq.remove(stunNodeSingleton);
         this.pq.add(alchNodeSingleton);
@@ -28,24 +29,29 @@ public class PriorityQueueWrapper {
     public int executeTopNode() throws InterruptedException{
         if(pq != null){
             ExecutableNode nextNode = pq.peek();
-            ConstantsAndStatics.hostScriptReference.log(nextNode);
+            swapKeysStunAlch(); //make the next action either a stun if the current action is a stun or vice versa
+            StunAlchScriptEntryPoint hostScriptRef = (StunAlchScriptEntryPoint) ConstantsAndStatics.hostScriptReference;
 
-            swapKeysStunAlch();
+            //if alching, increase the key of a stun error node because a stun is next, vice versa for stuning
             if(nextNode instanceof AlchNode){
-                //StunErrorNode node = StunErrorNode.getInstance();
+                StunErrorNode node = StunErrorNode.getStunErrorNodeInstance();
+                node.attemptDecreaseKey();
+                pq.remove(node);
+                pq.add(node);
             }
             else if(nextNode instanceof StunNode){
+                hostScriptRef.incrementSpellCycles();
                 AlchErrorNode node = AlchErrorNode.getAlchErrorNodeInstance();
                 node.attemptDecreaseKey();
                 pq.remove(node);
                 pq.add(node);
             }
             else if(nextNode instanceof AlchErrorNode || nextNode instanceof StunErrorNode){
-                resetPQ();
+                resetPQ(); //set keys of all nodes back to default values to resume normal alch->stun->alch... operation
             }
-            int onLoopSleepTime = nextNode.executeNodeAction();
             debugPQ();
-            return onLoopSleepTime;
+            return nextNode.executeNodeAction(); //returns the sleep time for onLoop()
+
         }
         return 0;
     }
@@ -72,7 +78,7 @@ public class PriorityQueueWrapper {
         this.pq.add(AlchNode.getAlchNodeInstance());
         this.pq.add(StunNode.getStunNodeInstance());
         this.pq.add(AlchErrorNode.getAlchErrorNodeInstance());
-        //this.pq.add(StunErrorNode.getStunErrorNodeInstance());
+        this.pq.add(StunErrorNode.getStunErrorNodeInstance());
     }
 
 }
