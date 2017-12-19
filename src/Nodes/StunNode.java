@@ -32,7 +32,7 @@ public class StunNode implements ExecutableNode, Comparable<ExecutableNode>{
     @Override
     public int executeNodeAction() throws InterruptedException {
         Magic m = ConstantsAndStatics.hostScriptReference.getMagic();
-        NPC npc = ConstantsAndStatics.hostScriptReference.getNpcs().closest(ConstantsAndStatics.DEBUG_NPC_ID);
+        NPC npc = ConstantsAndStatics.hostScriptReference.getNpcs().closest(ConstantsAndStatics.targetNPC);
         if(canCastStun()){
             m.castSpellOnEntity(Spells.NormalSpells.STUN, npc);
             if(AlchErrorNode.getAlchErrorNodeInstance().getKey() <= 0){ //alch error is next, let next node handle moving mouse

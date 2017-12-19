@@ -1,21 +1,33 @@
 package ScriptClasses;
 
+import GUI.SwingGUI;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
-
 import java.awt.*;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "IRONMAN stun-alcher", info = "cast stun and alchs for high xph", version = 0.2, logo = "")
+@ScriptManifest(author = "PayPalMeRSGP", name = "IRONMAN stun/alcher", info = "cast stun and alchs for high xph", version = 0.2, logo = "")
 public class StunAlchScriptEntryPoint extends Script {
 
     private PriorityQueueWrapper pqw;
     private long startTime;
     private int spellCycles = 0;
+
     @Override
     public void onStart() throws InterruptedException {
         super.onStart();
         ConstantsAndStatics.setHostScriptReference(this);
+
+        SwingGUI gui = new SwingGUI();
+        try{
+            while(gui.isVisable()){
+                sleep(100);
+            }
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
         pqw = new PriorityQueueWrapper();
         startTime = System.currentTimeMillis();
         getExperienceTracker().start(Skill.MAGIC);
@@ -60,8 +72,6 @@ public class StunAlchScriptEntryPoint extends Script {
     public void incrementSpellCycles(){
         this.spellCycles++;
     }
-
-
 
 
 }

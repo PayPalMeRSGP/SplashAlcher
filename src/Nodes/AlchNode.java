@@ -1,9 +1,7 @@
 package Nodes;
 
 import ScriptClasses.ConstantsAndStatics;
-import org.osbot.Con;
 import org.osbot.rs07.api.Magic;
-import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.script.MethodProvider;
 
@@ -33,7 +31,7 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
             m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
             MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(ConstantsAndStatics.BETWEEN_ALCH_MEAN_MS, ConstantsAndStatics.BETWEEN_ALCH_STDDEV_MS));
             if(m.isSpellSelected()){
-                ConstantsAndStatics.hostScriptReference.getInventory().interact("Cast", ConstantsAndStatics.DEBUG_ITEM);
+                ConstantsAndStatics.hostScriptReference.getInventory().interact("Cast", ConstantsAndStatics.targetItem);
             }
 
             if(ConstantsAndStatics.hoverOverStun(ConstantsAndStatics.hostScriptReference)){

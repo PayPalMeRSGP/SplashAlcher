@@ -1,9 +1,5 @@
 package ScriptClasses;
 
-import Nodes.AlchNode;
-import Nodes.StunNode;
-import org.osbot.rs07.api.Mouse;
-import org.osbot.rs07.script.MethodProvider;
 import org.osbot.rs07.script.Script;
 
 import java.awt.Point;
@@ -23,8 +19,8 @@ public class ConstantsAndStatics {
     public static final Point ALCH_NOTHING_UPPER_LEFT_BOUNDS = new Point(721,319);
     public static final Point ALCH_NOTHING_LOWER_RIGHT_BOUNDS = new Point(725,337);
 
-    public static final int DEBUG_NPC_ID = 2838;
-    public static final String DEBUG_ITEM = "Magic longbow";
+    public static String targetNPC;
+    public static String targetItem;
 
     public static Script hostScriptReference;
 
@@ -39,8 +35,6 @@ public class ConstantsAndStatics {
         return Math.abs(debug); //in case we get a negative number
     }
 
-
-
     public static boolean hoverOverStun(Script hostScriptReference){
         return hoverOverArea(STUN_UPPER_LEFT_BOUND, STUN_LOWER_RIGHT_BOUND, hostScriptReference);
     }
@@ -49,5 +43,13 @@ public class ConstantsAndStatics {
         int randX = ThreadLocalRandom.current().nextInt(upperLeftBound.x, lowerRightBound.x);
         int randY = ThreadLocalRandom.current().nextInt(upperLeftBound.y, lowerRightBound.y);
         return !hostScriptReference.getMouse().move(randX, randY);
+    }
+
+    public static void setTargetNPC(String targetNPC) {
+        ConstantsAndStatics.targetNPC = targetNPC;
+    }
+
+    public static void setTargetItem(String targetItem) {
+        ConstantsAndStatics.targetItem = targetItem;
     }
 }

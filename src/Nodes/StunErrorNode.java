@@ -36,7 +36,7 @@ public class StunErrorNode implements ExecutableNode, Comparable<ExecutableNode>
     }
 
     private void misclickNPC(){
-        NPC targetNpc = ConstantsAndStatics.hostScriptReference.getNpcs().closest(ConstantsAndStatics.DEBUG_NPC_ID);
+        NPC targetNpc = ConstantsAndStatics.hostScriptReference.getNpcs().closest(ConstantsAndStatics.targetNPC);
         EntityDestination stunTarget = new EntityDestination(ConstantsAndStatics.hostScriptReference.getBot(), targetNpc);
         Rectangle boundingBox = stunTarget.getBoundingBox();
         int MAX_MISCLICK_AMOUNT = 25;
