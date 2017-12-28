@@ -3,6 +3,8 @@ package GUI;
 import ScriptClasses.ConstantsAndStatics;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
+import org.osbot.rs07.api.ui.MagicSpell;
+import org.osbot.rs07.api.ui.Spells;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -35,24 +38,26 @@ public class SwingGUI {
 
     private JComboBox<String> dropDownNPCs;
     private JComboBox<String> dropDownItems;
+    private JComboBox<String> splashingSpells;
 
+    private static final HashMap<String, MagicSpell> magicSpellMapper = new HashMap<>();
 
     private boolean isVisable;
 
     public SwingGUI(){
-
-
-
-        mainFrame = new JFrame("IRONMAN stun/alcher");
+        mainFrame = new JFrame("yFoo()'s curse || stun || etc. -> alcher");
         mainFrame.setSize(600, 400);
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(25,25,25,25));
+
         setUpInstructions();
+        setUpSplashSpellSelector();
         setUpTargetNPCSelector();
         setUpAlchingItemSelector();
         setUpConfirmOrCancelBtns();
+
 
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent){
@@ -76,9 +81,28 @@ public class SwingGUI {
         mainPanel.add(instructions);
     }
 
+    private void setUpSplashSpellSelector(){
+        JPanel labelDropDownAndRefreshHolder = new JPanel();
+        labelDropDownAndRefreshHolder.setLayout(new BoxLayout(labelDropDownAndRefreshHolder, BoxLayout.X_AXIS));
+        JLabel targetSpellLabel = new JLabel("splashing spell");
+        JPanel dropDownHolder = new JPanel();
+
+        String[] arr = {String.valueOf(Spells.NormalSpells.CURSE), String.valueOf(Spells.NormalSpells.VULNERABILITY), String.valueOf(Spells.NormalSpells.ENFEEBLE), String.valueOf(Spells.NormalSpells.STUN)};
+
+        splashingSpells = new JComboBox<>(arr);
+        splashingSpells.setSelectedIndex(0);
+        dropDownHolder.add(splashingSpells);
+
+        labelDropDownAndRefreshHolder.add(targetSpellLabel);
+        labelDropDownAndRefreshHolder.add(dropDownHolder);
+        labelDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(50,0)));
+
+        mainPanel.add(labelDropDownAndRefreshHolder);
+    }
+
     private void setUpTargetNPCSelector(){
-        JPanel lableDropDownAndRefreshHolder = new JPanel();
-        lableDropDownAndRefreshHolder.setLayout(new BoxLayout(lableDropDownAndRefreshHolder, BoxLayout.X_AXIS));
+        JPanel labelDropDownAndRefreshHolder = new JPanel();
+        labelDropDownAndRefreshHolder.setLayout(new BoxLayout(labelDropDownAndRefreshHolder, BoxLayout.X_AXIS));
         JLabel targetNPCLabel = new JLabel("target NPC");
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh NPCs");
@@ -88,21 +112,21 @@ public class SwingGUI {
         dropDownNPCs.setSelectedIndex(0);
         dropDownHolder.add(dropDownNPCs);
 
-        lableDropDownAndRefreshHolder.add(targetNPCLabel);
-        lableDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
-        lableDropDownAndRefreshHolder.add(dropDownHolder);
-        lableDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
-        lableDropDownAndRefreshHolder.add(itemRefreshBtn);
+        labelDropDownAndRefreshHolder.add(targetNPCLabel);
+        labelDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
+        labelDropDownAndRefreshHolder.add(dropDownHolder);
+        labelDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
+        labelDropDownAndRefreshHolder.add(itemRefreshBtn);
 
         itemRefreshBtn.setActionCommand(REFRESH_NPC);
         itemRefreshBtn.addActionListener(new ButtonClickListener());
 
-        mainPanel.add(lableDropDownAndRefreshHolder);
+        mainPanel.add(labelDropDownAndRefreshHolder);
     }
 
     private void setUpAlchingItemSelector(){
-        JPanel lableDropDownAndRefreshHolder = new JPanel();
-        lableDropDownAndRefreshHolder.setLayout(new BoxLayout(lableDropDownAndRefreshHolder, BoxLayout.X_AXIS));
+        JPanel labelDropDownAndRefreshHolder = new JPanel();
+        labelDropDownAndRefreshHolder.setLayout(new BoxLayout(labelDropDownAndRefreshHolder, BoxLayout.X_AXIS));
         JLabel targetItem = new JLabel("target Item");
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh Items");
@@ -112,16 +136,16 @@ public class SwingGUI {
         dropDownItems.setSelectedIndex(0);
         dropDownHolder.add(dropDownItems);
 
-        lableDropDownAndRefreshHolder.add(targetItem);
-        lableDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
-        lableDropDownAndRefreshHolder.add(dropDownHolder);
-        lableDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
-        lableDropDownAndRefreshHolder.add(itemRefreshBtn);
+        labelDropDownAndRefreshHolder.add(targetItem);
+        labelDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
+        labelDropDownAndRefreshHolder.add(dropDownHolder);
+        labelDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(40,0)));
+        labelDropDownAndRefreshHolder.add(itemRefreshBtn);
 
         itemRefreshBtn.setActionCommand(REFRESH_ITEM);
         itemRefreshBtn.addActionListener(new ButtonClickListener());
 
-        mainPanel.add(lableDropDownAndRefreshHolder);
+        mainPanel.add(labelDropDownAndRefreshHolder);
     }
 
     private void setUpConfirmOrCancelBtns(){
@@ -171,9 +195,15 @@ public class SwingGUI {
     private void passParametersBack(String npc, String item){
         ConstantsAndStatics.setTargetNPC(npc);
         ConstantsAndStatics.setTargetItem(item);
+        
     }
 
     private Vector<String> getNPCs(){
+        if(ConstantsAndStatics.hostScriptReference == null){ //for debugging
+            Vector<String> test = new Vector<>();
+            test.add("TEST");
+            return test;
+        }
         nearbyNPCs = new Vector<>(ConstantsAndStatics.hostScriptReference.getNpcs().getAll());
         Vector<String> nearbyNPCsVector = new Vector<>();
         for(NPC npc: nearbyNPCs){
@@ -183,6 +213,11 @@ public class SwingGUI {
     }
 
     private Vector<String> getItems(){
+        if(ConstantsAndStatics.hostScriptReference == null){ //for debugging
+            Vector<String> test = new Vector<>();
+            test.add("TEST");
+            return test;
+        }
         inventoryItems = new Vector<>(Arrays.asList(ConstantsAndStatics.hostScriptReference.getInventory().getItems()));
         Vector<String> inventoryItemsVector = new Vector<>();
         for(Item item: inventoryItems){
@@ -196,7 +231,10 @@ public class SwingGUI {
 
     private void closeAndStopScript(){
         mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        ConstantsAndStatics.hostScriptReference.stop(false);
+        if(ConstantsAndStatics.hostScriptReference != null){
+            ConstantsAndStatics.hostScriptReference.stop(false);
+        }
+
         SwingGUI.this.mainFrame.dispose();
     }
 
@@ -204,8 +242,8 @@ public class SwingGUI {
         return isVisable;
     }
 
-    /*public static void main(String[] args){ //testing gui
+    public static void main(String[] args){ //testing gui
         SwingGUI swingLayoutDemo = new SwingGUI();
-    }*/
+    }
 
 }

@@ -1,5 +1,6 @@
-package Nodes;
+package Nodes.StunAlch;
 
+import Nodes.ExecutableNode;
 import ScriptClasses.ConstantsAndStatics;
 import org.osbot.rs07.api.Mouse;
 import org.osbot.rs07.api.model.NPC;

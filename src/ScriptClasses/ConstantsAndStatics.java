@@ -7,6 +7,15 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ConstantsAndStatics {
+    private class WidgetParametersStruct {
+        int root;
+        int child;
+
+        WidgetParametersStruct(int root, int child){
+            this.root = root;
+            this.child = child;
+        }
+    }
 
     public static final int RS_GAME_TICK_MS = 603;
     public static final double BETWEEN_ALCH_STDDEV_MS = 20;

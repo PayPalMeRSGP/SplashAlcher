@@ -21,7 +21,7 @@ public class StunAlchScriptEntryPoint extends Script {
         SwingGUI gui = new SwingGUI();
         try{
             while(gui.isVisable()){
-                sleep(100);
+                sleep(500);
             }
         }
         catch (InterruptedException e){

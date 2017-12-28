@@ -1,6 +1,9 @@
 package ScriptClasses;
 
 import Nodes.*;
+import Nodes.SpinFlax.BankBowStringNode;
+import Nodes.SpinFlax.SpinFlaxNode;
+import Nodes.StunAlch.*;
 
 import java.util.PriorityQueue;
 
@@ -8,7 +11,7 @@ public class PriorityQueueWrapper {
     private PriorityQueue<ExecutableNode> pq;
 
     PriorityQueueWrapper(){
-        setUpPQ();
+        setUpPQForStunAlch();
     }
 
     private void swapKeysStunAlch(){
@@ -24,6 +27,10 @@ public class PriorityQueueWrapper {
         this.pq.remove(stunNodeSingleton);
         this.pq.add(alchNodeSingleton);
         this.pq.add(stunNodeSingleton);
+    }
+
+    private void swapKeys(ExecutableNode node1, ExecutableNode node2){
+
     }
 
     public int executeTopNode() throws InterruptedException{
@@ -69,16 +76,22 @@ public class PriorityQueueWrapper {
         for(ExecutableNode node: pq){
             node.resetKey();
         }
-        setUpPQ();
+        setUpPQForStunAlch();
 
     }
 
-    private void setUpPQ(){
+    private void setUpPQForStunAlch(){
         this.pq = new PriorityQueue<>();
         this.pq.add(AlchNode.getAlchNodeInstance());
         this.pq.add(StunNode.getStunNodeInstance());
         this.pq.add(AlchErrorNode.getAlchErrorNodeInstance());
         this.pq.add(StunErrorNode.getStunErrorNodeInstance());
+    }
+
+    private void setUpPQForSpinFlax(){
+        this.pq = new PriorityQueue<>();
+        this.pq.add(BankBowStringNode.getBankBowStringNodeInstance());
+        this.pq.add(SpinFlaxNode.getSpinFlaxNodeInstnace());
     }
 
 }
