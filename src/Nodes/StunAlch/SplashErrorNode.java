@@ -1,7 +1,7 @@
 package Nodes.StunAlch;
 
 import Nodes.ExecutableNode;
-import ScriptClasses.ConstantsAndStatics;
+import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Mouse;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Spells;
@@ -13,39 +13,39 @@ import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 //TODO: Implement
-public class StunErrorNode implements ExecutableNode, Comparable<ExecutableNode> {
+public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNode> {
 
     private final int BASE_STARTING_KEY = 27; //odd numbers only, I subtract 2 at a time so key will not every be 0 causing a tie with an alch or stun node.
     private int currentKey = BASE_STARTING_KEY;
 
-    private static StunErrorNode singleton;
+    private static SplashErrorNode singleton;
 
-    private StunErrorNode(){}
+    private SplashErrorNode(){}
 
-    public static StunErrorNode getStunErrorNodeInstance(){
+    public static SplashErrorNode getStunErrorNodeInstance(){
         if(singleton == null){
-            singleton = new StunErrorNode();
+            singleton = new SplashErrorNode();
         }
         return singleton;
     }
 
     @Override
     public int executeNodeAction() {
-        ConstantsAndStatics.hostScriptReference.log("committing misclickNPC artificial error");
+        PublicStaticFinalConstants.hostScriptReference.log("committing misclickNPC artificial error");
         misclickNPC();
-        return (int) ConstantsAndStatics.randomNormalDist(200,30);
+        return (int) PublicStaticFinalConstants.randomNormalDist(200,30);
     }
 
     private void misclickNPC(){
-        NPC targetNpc = ConstantsAndStatics.hostScriptReference.getNpcs().closest(ConstantsAndStatics.targetNPC);
-        EntityDestination stunTarget = new EntityDestination(ConstantsAndStatics.hostScriptReference.getBot(), targetNpc);
+        NPC targetNpc = PublicStaticFinalConstants.hostScriptReference.getNpcs().closest(PublicStaticFinalConstants.targetNPC);
+        EntityDestination stunTarget = new EntityDestination(PublicStaticFinalConstants.hostScriptReference.getBot(), targetNpc);
         Rectangle boundingBox = stunTarget.getBoundingBox();
         int MAX_MISCLICK_AMOUNT = 25;
         int misclickBoundX = (int) boundingBox.getX() + MAX_MISCLICK_AMOUNT;
         int misclickBoundY = (int) boundingBox.getY() + MAX_MISCLICK_AMOUNT;
 
-        Script hostScriptRef = ConstantsAndStatics.hostScriptReference;
-        Mouse mouse = ConstantsAndStatics.hostScriptReference.getMouse();
+        Script hostScriptRef = PublicStaticFinalConstants.hostScriptReference;
+        Mouse mouse = PublicStaticFinalConstants.hostScriptReference.getMouse();
         boolean useVertBoundingBox = ThreadLocalRandom.current().nextBoolean();
         hostScriptRef.getMagic().castSpell(Spells.NormalSpells.STUN);
         if(useVertBoundingBox){
@@ -101,7 +101,7 @@ public class StunErrorNode implements ExecutableNode, Comparable<ExecutableNode>
             if(o instanceof AlchNode){
                 return 1;
             }
-            else if(o instanceof StunNode){
+            else if(o instanceof SplashNode){
                 return -1;
             }
         }
@@ -110,6 +110,6 @@ public class StunErrorNode implements ExecutableNode, Comparable<ExecutableNode>
 
     @Override
     public String toString(){
-        return "Type: StunErrorNode, CurrentKey: " + currentKey;
+        return "Type: SplashErrorNode, CurrentKey: " + currentKey;
     }
 }

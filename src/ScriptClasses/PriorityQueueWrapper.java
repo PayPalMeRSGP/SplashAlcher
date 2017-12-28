@@ -16,17 +16,17 @@ public class PriorityQueueWrapper {
 
     private void swapKeysStunAlch(){
         AlchNode alchNodeSingleton = AlchNode.getAlchNodeInstance();
-        StunNode stunNodeSingleton = StunNode.getStunNodeInstance();
+        SplashNode splashNodeSingleton = SplashNode.getStunNodeInstance();
         int alchNodeKey = alchNodeSingleton.getKey();
-        int stunNodeKey = stunNodeSingleton.getKey();
+        int stunNodeKey = splashNodeSingleton.getKey();
         alchNodeSingleton.setKey(stunNodeKey);
-        stunNodeSingleton.setKey(alchNodeKey);
+        splashNodeSingleton.setKey(alchNodeKey);
 
         //pq doesn't update until the nodes with changed keys are removed and re-added
         this.pq.remove(alchNodeSingleton);
-        this.pq.remove(stunNodeSingleton);
+        this.pq.remove(splashNodeSingleton);
         this.pq.add(alchNodeSingleton);
-        this.pq.add(stunNodeSingleton);
+        this.pq.add(splashNodeSingleton);
     }
 
     private void swapKeys(ExecutableNode node1, ExecutableNode node2){
@@ -37,23 +37,23 @@ public class PriorityQueueWrapper {
         if(pq != null){
             ExecutableNode nextNode = pq.peek();
             swapKeysStunAlch(); //make the next action either a stun if the current action is a stun or vice versa
-            StunAlchScriptEntryPoint hostScriptRef = (StunAlchScriptEntryPoint) ConstantsAndStatics.hostScriptReference;
+            MainScript hostScriptRef = (MainScript) PublicStaticFinalConstants.hostScriptReference;
 
             //if alching, increase the key of a stun error node because a stun is next, vice versa for stuning
             if(nextNode instanceof AlchNode){
-                StunErrorNode node = StunErrorNode.getStunErrorNodeInstance();
+                SplashErrorNode node = SplashErrorNode.getStunErrorNodeInstance();
                 node.attemptDecreaseKey();
                 pq.remove(node);
                 pq.add(node);
             }
-            else if(nextNode instanceof StunNode){
+            else if(nextNode instanceof SplashNode){
                 hostScriptRef.incrementSpellCycles();
                 AlchErrorNode node = AlchErrorNode.getAlchErrorNodeInstance();
                 node.attemptDecreaseKey();
                 pq.remove(node);
                 pq.add(node);
             }
-            else if(nextNode instanceof AlchErrorNode || nextNode instanceof StunErrorNode){
+            else if(nextNode instanceof AlchErrorNode || nextNode instanceof SplashErrorNode){
                 resetPQ(); //set keys of all nodes back to default values to resume normal alch->stun->alch... operation
             }
             //debugPQ();
@@ -67,9 +67,9 @@ public class PriorityQueueWrapper {
         PriorityQueue<ExecutableNode> pqCopy = new PriorityQueue<>(pq);
         while(!pqCopy.isEmpty()){
             ExecutableNode node = pqCopy.poll();
-            ConstantsAndStatics.hostScriptReference.log(node.toString());
+            PublicStaticFinalConstants.hostScriptReference.log(node.toString());
         }
-        ConstantsAndStatics.hostScriptReference.log("--------------------------------------------------------");
+        PublicStaticFinalConstants.hostScriptReference.log("--------------------------------------------------------");
     }
 
     private void resetPQ(){
@@ -83,9 +83,9 @@ public class PriorityQueueWrapper {
     private void setUpPQForStunAlch(){
         this.pq = new PriorityQueue<>();
         this.pq.add(AlchNode.getAlchNodeInstance());
-        this.pq.add(StunNode.getStunNodeInstance());
+        this.pq.add(SplashNode.getStunNodeInstance());
         this.pq.add(AlchErrorNode.getAlchErrorNodeInstance());
-        this.pq.add(StunErrorNode.getStunErrorNodeInstance());
+        this.pq.add(SplashErrorNode.getStunErrorNodeInstance());
     }
 
     private void setUpPQForSpinFlax(){

@@ -1,6 +1,6 @@
 package GUI;
 
-import ScriptClasses.ConstantsAndStatics;
+import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.MagicSpell;
@@ -38,7 +38,7 @@ public class SwingGUI {
 
     private JComboBox<String> dropDownNPCs;
     private JComboBox<String> dropDownItems;
-    private JComboBox<String> splashingSpells;
+    private JComboBox<Spells.NormalSpells> dropDownSplashingSpells;
 
     private static final HashMap<String, MagicSpell> magicSpellMapper = new HashMap<>();
 
@@ -87,11 +87,11 @@ public class SwingGUI {
         JLabel targetSpellLabel = new JLabel("splashing spell");
         JPanel dropDownHolder = new JPanel();
 
-        String[] arr = {String.valueOf(Spells.NormalSpells.CURSE), String.valueOf(Spells.NormalSpells.VULNERABILITY), String.valueOf(Spells.NormalSpells.ENFEEBLE), String.valueOf(Spells.NormalSpells.STUN)};
+        Spells.NormalSpells[] spells = {Spells.NormalSpells.CURSE, Spells.NormalSpells.VULNERABILITY, Spells.NormalSpells.ENFEEBLE, Spells.NormalSpells.STUN};
 
-        splashingSpells = new JComboBox<>(arr);
-        splashingSpells.setSelectedIndex(0);
-        dropDownHolder.add(splashingSpells);
+        dropDownSplashingSpells = new JComboBox<>(spells);
+        dropDownSplashingSpells.setSelectedIndex(0);
+        dropDownHolder.add(dropDownSplashingSpells);
 
         labelDropDownAndRefreshHolder.add(targetSpellLabel);
         labelDropDownAndRefreshHolder.add(dropDownHolder);
@@ -180,7 +180,8 @@ public class SwingGUI {
                 case CONFIRM:
                     String item = Objects.requireNonNull(dropDownItems.getSelectedItem()).toString();
                     String npc = Objects.requireNonNull(dropDownNPCs.getSelectedItem()).toString();
-                    passParametersBack(npc, item);
+                    Spells.NormalSpells spell = (Spells.NormalSpells) dropDownSplashingSpells.getSelectedItem();
+                    passParametersBack(npc, item, spell);
                     isVisable = false;
                     mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     SwingGUI.this.mainFrame.dispose();
@@ -192,19 +193,19 @@ public class SwingGUI {
         }
     }
 
-    private void passParametersBack(String npc, String item){
-        ConstantsAndStatics.setTargetNPC(npc);
-        ConstantsAndStatics.setTargetItem(item);
-        
+    private void passParametersBack(String npc, String item, Spells.NormalSpells spell){
+        PublicStaticFinalConstants.setTargetNPC(npc);
+        PublicStaticFinalConstants.setTargetItem(item);
+        PublicStaticFinalConstants.setSplashingSpell(spell);
     }
 
     private Vector<String> getNPCs(){
-        if(ConstantsAndStatics.hostScriptReference == null){ //for debugging
+        if(PublicStaticFinalConstants.hostScriptReference == null){ //for debugging
             Vector<String> test = new Vector<>();
             test.add("TEST");
             return test;
         }
-        nearbyNPCs = new Vector<>(ConstantsAndStatics.hostScriptReference.getNpcs().getAll());
+        nearbyNPCs = new Vector<>(PublicStaticFinalConstants.hostScriptReference.getNpcs().getAll());
         Vector<String> nearbyNPCsVector = new Vector<>();
         for(NPC npc: nearbyNPCs){
             nearbyNPCsVector.add(npc.getName());
@@ -213,12 +214,12 @@ public class SwingGUI {
     }
 
     private Vector<String> getItems(){
-        if(ConstantsAndStatics.hostScriptReference == null){ //for debugging
+        if(PublicStaticFinalConstants.hostScriptReference == null){ //for debugging
             Vector<String> test = new Vector<>();
             test.add("TEST");
             return test;
         }
-        inventoryItems = new Vector<>(Arrays.asList(ConstantsAndStatics.hostScriptReference.getInventory().getItems()));
+        inventoryItems = new Vector<>(Arrays.asList(PublicStaticFinalConstants.hostScriptReference.getInventory().getItems()));
         Vector<String> inventoryItemsVector = new Vector<>();
         for(Item item: inventoryItems){
             if(item == null){
@@ -231,8 +232,8 @@ public class SwingGUI {
 
     private void closeAndStopScript(){
         mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        if(ConstantsAndStatics.hostScriptReference != null){
-            ConstantsAndStatics.hostScriptReference.stop(false);
+        if(PublicStaticFinalConstants.hostScriptReference != null){
+            PublicStaticFinalConstants.hostScriptReference.stop(false);
         }
 
         SwingGUI.this.mainFrame.dispose();

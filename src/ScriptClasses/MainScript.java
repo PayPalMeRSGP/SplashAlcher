@@ -6,8 +6,8 @@ import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import java.awt.*;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "IRONMAN stun/alcher", info = "cast stun and alchs for high xph", version = 0.2, logo = "")
-public class StunAlchScriptEntryPoint extends Script {
+@ScriptManifest(author = "PayPalMeRSGP", name = "curse || stun -> alch 1", info = "cast stun and alchs for high xph", version = 0.2, logo = "")
+public class MainScript extends Script {
 
     private PriorityQueueWrapper pqw;
     private long startTime;
@@ -16,7 +16,7 @@ public class StunAlchScriptEntryPoint extends Script {
     @Override
     public void onStart() throws InterruptedException {
         super.onStart();
-        ConstantsAndStatics.setHostScriptReference(this);
+        PublicStaticFinalConstants.setHostScriptReference(this);
 
         SwingGUI gui = new SwingGUI();
         try{
@@ -31,7 +31,7 @@ public class StunAlchScriptEntryPoint extends Script {
         pqw = new PriorityQueueWrapper();
         startTime = System.currentTimeMillis();
         getExperienceTracker().start(Skill.MAGIC);
-        getBot().addPainter(StunAlchScriptEntryPoint.this);
+        getBot().addPainter(MainScript.this);
     }
 
     @Override

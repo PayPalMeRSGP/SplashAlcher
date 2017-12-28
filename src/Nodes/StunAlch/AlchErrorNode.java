@@ -1,7 +1,7 @@
 package Nodes.StunAlch;
 
 import Nodes.ExecutableNode;
-import ScriptClasses.ConstantsAndStatics;
+import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Magic;
 import org.osbot.rs07.api.Mouse;
 import org.osbot.rs07.api.ui.Spells;
@@ -29,30 +29,30 @@ public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode>
 
     @Override
     public int executeNodeAction() throws InterruptedException {
-        Magic m = ConstantsAndStatics.hostScriptReference.getMagic();
+        Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
         int randomNum = ThreadLocalRandom.current().nextInt(0, 2);
 
         if(randomNum == 0){
-            ConstantsAndStatics.hostScriptReference.log("committing alchNothing artificial error");
+            PublicStaticFinalConstants.hostScriptReference.log("committing alchNothing artificial error");
             alchNothing();
         }
         else{
-            ConstantsAndStatics.hostScriptReference.log("committing misclickEarthBlast artificial error");
+            PublicStaticFinalConstants.hostScriptReference.log("committing misclickEarthBlast artificial error");
             misclickEarthBlast();
         }
 
-        return (int) ConstantsAndStatics.randomNormalDist(400, 50);
+        return (int) PublicStaticFinalConstants.randomNormalDist(400, 50);
     }
 
     private void misclickEarthBlast() throws InterruptedException {
-        Mouse mouse = ConstantsAndStatics.hostScriptReference.getMouse();
-        int randX = ThreadLocalRandom.current().nextInt(ConstantsAndStatics.EARTH_BLAST_UPPER_LEFT_BOUND.x, ConstantsAndStatics.EARTH_BLAST_LOWER_RIGHT_BOUND.x);
-        int randY = ThreadLocalRandom.current().nextInt(ConstantsAndStatics.EARTH_BLAST_UPPER_LEFT_BOUND.y, ConstantsAndStatics.EARTH_BLAST_LOWER_RIGHT_BOUND.y);
+        Mouse mouse = PublicStaticFinalConstants.hostScriptReference.getMouse();
+        int randX = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.EARTH_BLAST_UPPER_LEFT_BOUND.x, PublicStaticFinalConstants.EARTH_BLAST_LOWER_RIGHT_BOUND.x);
+        int randY = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.EARTH_BLAST_UPPER_LEFT_BOUND.y, PublicStaticFinalConstants.EARTH_BLAST_LOWER_RIGHT_BOUND.y);
         if(mouse.move(randX, randY)){
-            MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(30, 5)); //pause before clicking on earth blast
+            MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(30, 5)); //pause before clicking on earth blast
             if(mouse.click(randX, randY, false)){ //select
-                if(ConstantsAndStatics.hostScriptReference.getMagic().isSpellSelected()){
-                    MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(400, 50)); //pause to emulate player realizing he has not clicked on alch
+                if(PublicStaticFinalConstants.hostScriptReference.getMagic().isSpellSelected()){
+                    MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(400, 50)); //pause to emulate player realizing he has not clicked on alch
                     mouse.click(randX, randY, false); //deselect
                 }
             }
@@ -61,17 +61,17 @@ public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode>
     }
 
     private void alchNothing() throws InterruptedException {
-        Mouse mouse = ConstantsAndStatics.hostScriptReference.getMouse();
-        Magic m = ConstantsAndStatics.hostScriptReference.getMagic();
-        int randX = ThreadLocalRandom.current().nextInt(ConstantsAndStatics.ALCH_NOTHING_UPPER_LEFT_BOUNDS.x, ConstantsAndStatics.ALCH_NOTHING_LOWER_RIGHT_BOUNDS.x);
-        int randY = ThreadLocalRandom.current().nextInt(ConstantsAndStatics.ALCH_NOTHING_UPPER_LEFT_BOUNDS.y, ConstantsAndStatics.ALCH_NOTHING_LOWER_RIGHT_BOUNDS.y);
+        Mouse mouse = PublicStaticFinalConstants.hostScriptReference.getMouse();
+        Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
+        int randX = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUNDS.x, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUNDS.x);
+        int randY = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUNDS.y, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUNDS.y);
         if(mouse.move(randX, randY)){
-            MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(30, 5));
+            MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(30, 5));
             if(m.canCast(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
                 m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
-                MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(80, 8));
+                MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(80, 8));
                 mouse.click(randX, randY, false); //deselect
-                MethodProvider.sleep(ConstantsAndStatics.randomNormalDist(1000, 200)); //pause to emulate player realizing that he just alched nothing
+                MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(1000, 200)); //pause to emulate player realizing that he just alched nothing
                 m.open(); //reopen magic tab
             }
         }
@@ -114,7 +114,7 @@ public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode>
             if(o instanceof AlchNode){
                 return -1;
             }
-            else if(o instanceof StunNode){
+            else if(o instanceof SplashNode){
                 return 1;
             }
         }

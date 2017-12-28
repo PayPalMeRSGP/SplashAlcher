@@ -1,10 +1,9 @@
 package Nodes.SpinFlax;
 
 import Nodes.ExecutableNode;
-import ScriptClasses.ConstantsAndStatics;
+import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Inventory;
 import org.osbot.rs07.api.Magic;
-import org.osbot.rs07.api.ui.MagicSpell;
 import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.script.MethodProvider;
 
@@ -29,12 +28,12 @@ public class SpinFlaxNode implements ExecutableNode{
 
     @Override
     public int executeNodeAction() throws InterruptedException {
-        Inventory inv = ConstantsAndStatics.hostScriptReference.getInventory();
+        Inventory inv = PublicStaticFinalConstants.hostScriptReference.getInventory();
         int numFlaxLeft = (int) inv.getAmount(FLAX);
-        Magic magic = ConstantsAndStatics.hostScriptReference.getMagic();
+        Magic magic = PublicStaticFinalConstants.hostScriptReference.getMagic();
         while(numFlaxLeft >= 0){
             magic.castSpell(Spells.LunarSpells.SPIN_FLAX);
-            MethodProvider.sleep((int) ConstantsAndStatics.randomNormalDist(ConstantsAndStatics.RS_GAME_TICK_MS, 80));
+            MethodProvider.sleep((int) PublicStaticFinalConstants.randomNormalDist(PublicStaticFinalConstants.RS_GAME_TICK_MS, 80));
         }
 
         return 0;

@@ -1,9 +1,8 @@
 package Nodes.SpinFlax;
 
 import Nodes.ExecutableNode;
-import ScriptClasses.ConstantsAndStatics;
+import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Bank;
-import org.osbot.rs07.script.MethodProvider;
 
 public class BankBowStringNode implements ExecutableNode{
 
@@ -26,14 +25,14 @@ public class BankBowStringNode implements ExecutableNode{
 
     @Override
     public int executeNodeAction() throws InterruptedException {
-        Bank bank = ConstantsAndStatics.hostScriptReference.getBank();
+        Bank bank = PublicStaticFinalConstants.hostScriptReference.getBank();
         bank.open();
         bank.depositAll(BOWSTRING);
 
         bank.withdrawAll(FLAX);
         bank.close();
 
-        return (int) ConstantsAndStatics.randomNormalDist(300, 30);
+        return (int) PublicStaticFinalConstants.randomNormalDist(300, 30);
     }
 
     @Override
