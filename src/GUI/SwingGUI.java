@@ -1,5 +1,7 @@
 package GUI;
 
+import ScriptClasses.WrapperClasses.ItemWrapper;
+import ScriptClasses.WrapperClasses.NPCWrapper;
 import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
@@ -15,7 +17,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.List;
 import java.util.Vector;
 
 public class SwingGUI {
@@ -33,11 +35,11 @@ public class SwingGUI {
     private static final String CONFIRM = "CONFIRM";
     private static final String CANCEL = "CANCEL";
 
-    private Vector<NPC> nearbyNPCs;
-    private Vector<Item> inventoryItems;
+    private Vector<NPCWrapper> nearbyNPCs;
+    private Vector<ItemWrapper> inventoryItems;
 
-    private JComboBox<String> dropDownNPCs;
-    private JComboBox<String> dropDownItems;
+    private JComboBox<NPCWrapper> dropDownNPCs;
+    private JComboBox<ItemWrapper> dropDownItems;
     private JComboBox<Spells.NormalSpells> dropDownSplashingSpells;
 
     private static final HashMap<String, MagicSpell> magicSpellMapper = new HashMap<>();
@@ -45,7 +47,7 @@ public class SwingGUI {
     private boolean isVisable;
 
     public SwingGUI(){
-        mainFrame = new JFrame("yFoo()'s curse || stun || etc. -> alcher");
+        mainFrame = new JFrame(PublicStaticFinalConstants.SCRIPT_NAME);
         mainFrame.setSize(600, 400);
 
         mainPanel = new JPanel();
@@ -107,9 +109,14 @@ public class SwingGUI {
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh NPCs");
 
-        Vector<String> nearbyNPCsVector = getNPCs();
-        dropDownNPCs = new JComboBox<>(nearbyNPCsVector);
-        dropDownNPCs.setSelectedIndex(0);
+        if(PublicStaticFinalConstants.hostScriptReference != null){
+            nearbyNPCs = getNPCs();
+            dropDownNPCs = new JComboBox<>(nearbyNPCs);
+        }
+        else{
+            dropDownNPCs = new JComboBox<>();
+        }
+
         dropDownHolder.add(dropDownNPCs);
 
         labelDropDownAndRefreshHolder.add(targetNPCLabel);
@@ -131,9 +138,14 @@ public class SwingGUI {
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh Items");
 
-        Vector<String> inventoryItemsVector = getItems();
-        dropDownItems = new JComboBox<>(inventoryItemsVector);
-        dropDownItems.setSelectedIndex(0);
+        if(PublicStaticFinalConstants.hostScriptReference != null){
+            inventoryItems = new Vector<>(getItems());
+            dropDownItems = new JComboBox<>(inventoryItems);
+        }
+        else{
+            dropDownItems = new JComboBox<>();
+        }
+
         dropDownHolder.add(dropDownItems);
 
         labelDropDownAndRefreshHolder.add(targetItem);
@@ -172,16 +184,32 @@ public class SwingGUI {
             String command = e.getActionCommand();
             switch(command){
                 case REFRESH_ITEM:
-                    dropDownItems = new JComboBox<>(getItems());
+                    if(PublicStaticFinalConstants.hostScriptReference != null){
+                        inventoryItems = new Vector<>(getItems());
+                        dropDownItems = new JComboBox<>(inventoryItems);
+                    }
                     break;
                 case REFRESH_NPC:
-                    dropDownNPCs = new JComboBox<>(getNPCs());
+                    if(PublicStaticFinalConstants.hostScriptReference != null){
+                        nearbyNPCs = new Vector<>();
+                        dropDownNPCs = new JComboBox<>(nearbyNPCs);
+                    }
                     break;
                 case CONFIRM:
-                    String item = Objects.requireNonNull(dropDownItems.getSelectedItem()).toString();
-                    String npc = Objects.requireNonNull(dropDownNPCs.getSelectedItem()).toString();
+                    ItemWrapper item = null;
+                    if(dropDownItems.getSelectedItem() instanceof ItemWrapper){
+                        item = (ItemWrapper) dropDownItems.getSelectedItem();
+                    }
+
+                    NPCWrapper npc = null;
+                    if(dropDownNPCs.getSelectedItem() instanceof NPCWrapper){
+                        npc = (NPCWrapper) dropDownNPCs.getSelectedItem();
+                    }
+
                     Spells.NormalSpells spell = (Spells.NormalSpells) dropDownSplashingSpells.getSelectedItem();
-                    passParametersBack(npc, item, spell);
+                    assert npc != null;
+                    assert item != null;
+                    passParametersBack(npc.getItemID(), item.getItemID(), spell);
                     isVisable = false;
                     mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     SwingGUI.this.mainFrame.dispose();
@@ -193,41 +221,41 @@ public class SwingGUI {
         }
     }
 
-    private void passParametersBack(String npc, String item, Spells.NormalSpells spell){
+    private Vector<NPCWrapper> getNPCs(){
+        if(PublicStaticFinalConstants.hostScriptReference != null){
+            List<NPC> npcs = PublicStaticFinalConstants.hostScriptReference.getNpcs().getAll();
+            Vector<NPCWrapper> wrappedNPCs = new Vector<>();
+            for(NPC npc: npcs){
+                if(npc == null){
+                    continue;
+                }
+                wrappedNPCs.add(new NPCWrapper(npc));
+            }
+            return wrappedNPCs;
+        }
+        return new Vector<>();
+
+    }
+
+    private Vector<ItemWrapper> getItems(){
+        if(PublicStaticFinalConstants.hostScriptReference != null){
+            List<Item> items = Arrays.asList(PublicStaticFinalConstants.hostScriptReference.getInventory().getItems());
+            Vector<ItemWrapper> wrappedItems = new Vector<>();
+            for(Item item: items){
+                if(item == null){
+                    continue;
+                }
+                wrappedItems.add(new ItemWrapper(item));
+            }
+            return wrappedItems;
+        }
+        return new Vector<>();
+    }
+
+    private void passParametersBack(int npc, int item, Spells.NormalSpells spell){
         PublicStaticFinalConstants.setTargetNPC(npc);
         PublicStaticFinalConstants.setTargetItem(item);
         PublicStaticFinalConstants.setSplashingSpell(spell);
-    }
-
-    private Vector<String> getNPCs(){
-        if(PublicStaticFinalConstants.hostScriptReference == null){ //for debugging
-            Vector<String> test = new Vector<>();
-            test.add("TEST");
-            return test;
-        }
-        nearbyNPCs = new Vector<>(PublicStaticFinalConstants.hostScriptReference.getNpcs().getAll());
-        Vector<String> nearbyNPCsVector = new Vector<>();
-        for(NPC npc: nearbyNPCs){
-            nearbyNPCsVector.add(npc.getName());
-        }
-        return nearbyNPCsVector;
-    }
-
-    private Vector<String> getItems(){
-        if(PublicStaticFinalConstants.hostScriptReference == null){ //for debugging
-            Vector<String> test = new Vector<>();
-            test.add("TEST");
-            return test;
-        }
-        inventoryItems = new Vector<>(Arrays.asList(PublicStaticFinalConstants.hostScriptReference.getInventory().getItems()));
-        Vector<String> inventoryItemsVector = new Vector<>();
-        for(Item item: inventoryItems){
-            if(item == null){
-                continue;
-            }
-            inventoryItemsVector.add(item.getName());
-        }
-        return inventoryItemsVector;
     }
 
     private void closeAndStopScript(){

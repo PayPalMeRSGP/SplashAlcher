@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PublicStaticFinalConstants {
+    public static final String SCRIPT_NAME = "curse() || stun() || ... -> alch()";
     public static final int RS_GAME_TICK_MS = 603;
     public static final double BETWEEN_ALCH_STDDEV_MS = 20;
     public static final double BETWEEN_ALCH_MEAN_MS = 215;
@@ -30,9 +31,11 @@ public class PublicStaticFinalConstants {
     public static final Point ALCH_NOTHING_UPPER_LEFT_BOUNDS = new Point(721,319);
     public static final Point ALCH_NOTHING_LOWER_RIGHT_BOUNDS = new Point(725,337);
 
-    public static String targetNPC;
-    public static String targetItem;
+    public static int targetNPC;
+    public static int targetItem;
     public static Spells.NormalSpells splashingSpell;
+
+    public static int totalCastableSpells;
 
     public static Script hostScriptReference;
 
@@ -40,6 +43,15 @@ public class PublicStaticFinalConstants {
 
     public static void setHostScriptReference(Script ref){
         hostScriptReference = ref;
+    }
+
+    public static void setTotalCastableSpells(int num){
+        totalCastableSpells = num;
+    }
+
+    public static boolean canCast(){
+        return totalCastableSpells-- > 0;
+
     }
 
     public static long randomNormalDist(double mean, double stddev){
@@ -71,12 +83,12 @@ public class PublicStaticFinalConstants {
         return !hostScriptReference.getMouse().move(randX, randY);
     }
 
-    public static void setTargetNPC(String targetNPC) {
-        PublicStaticFinalConstants.targetNPC = targetNPC;
+    public static void setTargetNPC(int npcID) {
+        PublicStaticFinalConstants.targetNPC = npcID;
     }
 
-    public static void setTargetItem(String targetItem) {
-        PublicStaticFinalConstants.targetItem = targetItem;
+    public static void setTargetItem(int itemID) {
+        PublicStaticFinalConstants.targetItem = itemID;
     }
 
     public static void setSplashingSpell(Spells.NormalSpells selectedSpell){

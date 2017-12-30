@@ -28,33 +28,21 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
     @Override
     public int executeNodeAction() throws InterruptedException {
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
-        if(canCastAlch()){
-            m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
-            MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(PublicStaticFinalConstants.BETWEEN_ALCH_MEAN_MS, PublicStaticFinalConstants.BETWEEN_ALCH_STDDEV_MS));
-            if(m.isSpellSelected()){
-                PublicStaticFinalConstants.hostScriptReference.getInventory().interact("Cast", PublicStaticFinalConstants.targetItem);
-            }
 
-            if(PublicStaticFinalConstants.hoverOverSplashSpell()){
-                return (int) PublicStaticFinalConstants.randomNormalDist(30, 3);
-            }
+        if(!m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
+            PublicStaticFinalConstants.hostScriptReference.stop();
         }
+        MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(PublicStaticFinalConstants.BETWEEN_ALCH_MEAN_MS, PublicStaticFinalConstants.BETWEEN_ALCH_STDDEV_MS));
+        if(m.isSpellSelected()){
+            PublicStaticFinalConstants.hostScriptReference.getInventory().interact("Cast", PublicStaticFinalConstants.targetItem);
+        }
+
+        if(PublicStaticFinalConstants.hoverOverSplashSpell()){
+            return (int) PublicStaticFinalConstants.randomNormalDist(30, 3);
+        }
+
 
         return 0;
-    }
-
-    private boolean canCastAlch() throws InterruptedException {
-        Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
-        alchsLeft--;
-        if(alchsLeft <= 0){
-            if(m.canCast(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
-                alchsLeft = 100;
-                return true;
-            }
-            return false;
-
-        }
-        return true;
     }
 
     @Override

@@ -1,12 +1,16 @@
 package ScriptClasses;
 
 import GUI.SwingGUI;
+import org.osbot.rs07.api.Inventory;
 import org.osbot.rs07.api.ui.Skill;
+import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import java.awt.*;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "curse || stun -> alch 1", info = "cast stun and alchs for high xph", version = 0.2, logo = "")
+import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
+
+@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "cast stun and alchs for high xph", version = 0.2, logo = "")
 public class MainScript extends Script {
 
     private PriorityQueueWrapper pqw;
@@ -16,6 +20,7 @@ public class MainScript extends Script {
     @Override
     public void onStart() throws InterruptedException {
         super.onStart();
+
         PublicStaticFinalConstants.setHostScriptReference(this);
 
         SwingGUI gui = new SwingGUI();
@@ -32,6 +37,7 @@ public class MainScript extends Script {
         startTime = System.currentTimeMillis();
         getExperienceTracker().start(Skill.MAGIC);
         getBot().addPainter(MainScript.this);
+        PublicStaticFinalConstants.setTotalCastableSpells(calculateMaxSpellCyclesPossible(PublicStaticFinalConstants.targetItem));
     }
 
     @Override
@@ -50,11 +56,58 @@ public class MainScript extends Script {
         int currentLevel = this.getSkills().getDynamic(Skill.MAGIC);
 
         iiIiiiiiIiIi.drawString("currentLevel: " + formatValue(currentLevel), 10, 225);
-        iiIiiiiiIiIi.drawString("casted " + spellCycles + " stuns/alchs", 10, 245);
+        iiIiiiiiIiIi.drawString("casted " + spellCycles + " splash -> alchs", 10, 245);
         iiIiiiiiIiIi.drawString("gainedXp: " + formatValue(gainedXp), 10, 265);
         iiIiiiiiIiIi.drawString("XP/H: " + formatValue(XPH), 10, 285);
         iiIiiiiiIiIi.drawString("TTL: " + formatTime(TTL), 10, 305);
         iiIiiiiiIiIi.drawString("runtime: " + formatTime(runTime), 10, 325);
+    }
+
+    private int calculateMaxSpellCyclesPossible(int alchingItemID) throws InterruptedException {
+        Inventory inv = getInventory();
+        int natureCount = (int) inv.getAmount(561);
+        int alchingItemCount = (int) inv.getAmount(alchingItemID);
+        boolean usingSoulRune = PublicStaticFinalConstants.splashingSpell != Spells.NormalSpells.CURSE;
+        int bodyOrSoulCount = (int) (usingSoulRune ? inv.getAmount(566) : inv.getAmount(559));
+        int fireCount = (int) inv.getAmount(554);
+        //checking if player has earth and water runes or a staff
+        boolean canCastSplashSpell = getMagic().canCast(Spells.NormalSpells.CURSE, true);
+
+        int earthCount = (int) inv.getAmount(557);
+        if(earthCount == 0 && canCastSplashSpell){
+            earthCount = Integer.MAX_VALUE;
+        }
+
+        int waterCount = (int) inv.getAmount(555);
+        if(waterCount == 0 && canCastSplashSpell){
+            waterCount = Integer.MAX_VALUE;
+        }
+
+        log("nature: " + natureCount + " item: " + alchingItemCount + " fire: " + fireCount);
+        log("body/soul: " + bodyOrSoulCount + " earth: " + earthCount + " water: " + waterCount);
+
+        switch(PublicStaticFinalConstants.splashingSpell){
+            case CURSE:
+                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/2, earthCount/3) - 1;
+            case VULNERABILITY:
+                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/5, earthCount/5) - 1;
+            case ENFEEBLE:
+                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/8, earthCount/8) - 1;
+            case STUN:
+                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/12, earthCount/12) - 1;
+            default:
+                return 0; //error?
+        }
+    }
+
+    private int min(int... args){
+        int min = args[0];
+        for(int num: args){
+            if (num < min) {
+                min = num;
+            }
+        }
+        return min;
     }
 
     private String formatTime(final long ms){

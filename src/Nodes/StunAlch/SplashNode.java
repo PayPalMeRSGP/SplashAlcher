@@ -14,7 +14,7 @@ public class SplashNode implements ExecutableNode, Comparable<ExecutableNode>{
     private final int BASE_STARTING_KEY = 1;
     private int currentKey = BASE_STARTING_KEY;
     private static SplashNode splashNodeSingleton = null;
-    
+
     private SplashNode(){
 
     }
@@ -32,15 +32,21 @@ public class SplashNode implements ExecutableNode, Comparable<ExecutableNode>{
     public int executeNodeAction() throws InterruptedException {
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
         NPC npc = PublicStaticFinalConstants.hostScriptReference.getNpcs().closest(PublicStaticFinalConstants.targetNPC);
-        if(true){
+        if(PublicStaticFinalConstants.canCast()){
             waitForMagicTab();
-            m.castSpellOnEntity(PublicStaticFinalConstants.splashingSpell, npc);
+            if(!m.castSpellOnEntity(PublicStaticFinalConstants.splashingSpell, npc)){
+                PublicStaticFinalConstants.hostScriptReference.stop();
+            }
+
             if(AlchErrorNode.getAlchErrorNodeInstance().getKey() <= 0){ //alch error is next, let next node handle moving mouse
                 return (int) PublicStaticFinalConstants.randomNormalDist(50, 5);
             }
             if(m.hoverSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){ //set up mouse on alch
                 return (int) PublicStaticFinalConstants.randomNormalDist(50, 5);
             }
+        }
+        else{
+            PublicStaticFinalConstants.hostScriptReference.stop();
         }
         return 0;
 
