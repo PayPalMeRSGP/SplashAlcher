@@ -34,29 +34,18 @@ public class PublicStaticFinalConstants {
     public static int targetNPC;
     public static int targetItem;
     public static Spells.NormalSpells splashingSpell;
-
     public static int totalCastableSpells;
 
     public static Script hostScriptReference;
 
     private PublicStaticFinalConstants(){} //meant to be a constant provider, no constructor
 
-    public static void setHostScriptReference(Script ref){
-        hostScriptReference = ref;
-    }
-
-    public static void setTotalCastableSpells(int num){
-        totalCastableSpells = num;
-    }
-
     public static boolean canCast(){
         return totalCastableSpells-- > 0;
-
     }
 
     public static long randomNormalDist(double mean, double stddev){
-        long debug = (long) ((new Random().nextGaussian() * stddev + mean));
-        return Math.abs(debug); //in case we get a negative number
+        return (long) Math.abs(new Random().nextGaussian() * stddev + mean); //in case we get a negative number
     }
 
     public static boolean hoverOverSplashSpell(){
@@ -93,5 +82,13 @@ public class PublicStaticFinalConstants {
 
     public static void setSplashingSpell(Spells.NormalSpells selectedSpell){
         PublicStaticFinalConstants.splashingSpell = selectedSpell;
+    }
+
+    public static void setHostScriptReference(Script ref){
+        hostScriptReference = ref;
+    }
+
+    public static void setTotalCastableSpells(int num){
+        totalCastableSpells = num;
     }
 }

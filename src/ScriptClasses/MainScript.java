@@ -10,7 +10,7 @@ import java.awt.*;
 
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "cast stun and alchs for high xph", version = 0.2, logo = "")
+@ScriptManifest(author = "PayPalMeRSGP", name = "debug4", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
 public class MainScript extends Script {
 
     private PriorityQueueWrapper pqw;
@@ -37,7 +37,9 @@ public class MainScript extends Script {
         startTime = System.currentTimeMillis();
         getExperienceTracker().start(Skill.MAGIC);
         getBot().addPainter(MainScript.this);
+
         PublicStaticFinalConstants.setTotalCastableSpells(calculateMaxSpellCyclesPossible(PublicStaticFinalConstants.targetItem));
+        log("can cast in total: " + PublicStaticFinalConstants.totalCastableSpells);
     }
 
     @Override
@@ -46,21 +48,31 @@ public class MainScript extends Script {
     }
 
     @Override
-    public void onPaint(Graphics2D iiIiiiiiIiIi) {
-        super.onPaint(iiIiiiiiIiIi);
-        iiIiiiiiIiIi.setColor(Color.GREEN);
+    public void onPaint(Graphics2D g) {
+        super.onPaint(g);
         long runTime = System.currentTimeMillis() - startTime;
         int gainedXp = this.getExperienceTracker().getGainedXP(Skill.MAGIC);
         int XPH = this.getExperienceTracker().getGainedXPPerHour(Skill.MAGIC);
         long TTL = this.getExperienceTracker().getTimeToLevel(Skill.MAGIC);
         int currentLevel = this.getSkills().getDynamic(Skill.MAGIC);
 
-        iiIiiiiiIiIi.drawString("currentLevel: " + formatValue(currentLevel), 10, 225);
-        iiIiiiiiIiIi.drawString("casted " + spellCycles + " splash -> alchs", 10, 245);
-        iiIiiiiiIiIi.drawString("gainedXp: " + formatValue(gainedXp), 10, 265);
-        iiIiiiiiIiIi.drawString("XP/H: " + formatValue(XPH), 10, 285);
-        iiIiiiiiIiIi.drawString("TTL: " + formatTime(TTL), 10, 305);
-        iiIiiiiiIiIi.drawString("runtime: " + formatTime(runTime), 10, 325);
+        //cursor
+        Point mP = getMouse().getPosition();
+        g.drawLine(mP.x - 5, mP.y + 5, mP.x + 5, mP.y - 5);
+        g.drawLine(mP.x + 5, mP.y + 5, mP.x - 5, mP.y - 5);
+
+        //stats
+        g.setColor(new Color(0,0,0));
+        g.draw(new Rectangle(8, 342, 506, 130));
+        g.setColor(new Color(255, 255, 255));
+        g.drawString("Current Level: " + formatValue(currentLevel), 10, 350);
+        g.drawString("casted " + spellCycles + " splash -> alchs", 10, 365);
+        g.drawString("gainedXp: " + formatValue(gainedXp), 10, 380);
+        g.drawString("XP/H: " + formatValue(XPH), 10, 395);
+        g.drawString("TTL: " + formatTime(TTL), 10, 410);
+        g.drawString("runtime: " + formatTime(runTime), 10, 425);
+
+
     }
 
     private int calculateMaxSpellCyclesPossible(int alchingItemID) throws InterruptedException {
@@ -69,9 +81,17 @@ public class MainScript extends Script {
         int alchingItemCount = (int) inv.getAmount(alchingItemID);
         boolean usingSoulRune = PublicStaticFinalConstants.splashingSpell != Spells.NormalSpells.CURSE;
         int bodyOrSoulCount = (int) (usingSoulRune ? inv.getAmount(566) : inv.getAmount(559));
-        int fireCount = (int) inv.getAmount(554);
+        int fireCount = (int) inv.getAmount(554, 4699); //fire and lava
         //checking if player has earth and water runes or a staff
-        boolean canCastSplashSpell = getMagic().canCast(Spells.NormalSpells.CURSE, true);
+        boolean canCastSplashSpell = false;
+        if(PublicStaticFinalConstants.splashingSpell != null){
+            canCastSplashSpell = getMagic().canCast(PublicStaticFinalConstants.splashingSpell, true);
+        }
+        else{
+            log("DEBUG0: no spell selected");
+            stop();
+        }
+
 
         int earthCount = (int) inv.getAmount(557);
         if(earthCount == 0 && canCastSplashSpell){
@@ -96,6 +116,8 @@ public class MainScript extends Script {
             case STUN:
                 return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/12, earthCount/12) - 1;
             default:
+                stop();
+                log("DEBUG1: no spell selected, in switch statement");
                 return 0; //error?
         }
     }

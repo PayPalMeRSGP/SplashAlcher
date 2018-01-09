@@ -1,6 +1,5 @@
-package Nodes.StunAlch;
+package Nodes;
 
-import Nodes.ExecutableNode;
 import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Magic;
 import org.osbot.rs07.api.model.NPC;

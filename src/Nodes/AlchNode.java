@@ -1,6 +1,5 @@
-package Nodes.StunAlch;
+package Nodes;
 
-import Nodes.ExecutableNode;
 import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Magic;
 import org.osbot.rs07.api.ui.Spells;
@@ -11,8 +10,6 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
     private final int BASE_STARTING_KEY = 0;
     private int currentKey = BASE_STARTING_KEY;
     private static AlchNode alchNodeSingleton;
-
-    private int alchsLeft = 0;
 
     private AlchNode(){
 
@@ -38,7 +35,7 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
         }
 
         if(PublicStaticFinalConstants.hoverOverSplashSpell()){
-            return (int) PublicStaticFinalConstants.randomNormalDist(30, 3);
+            return (int) PublicStaticFinalConstants.randomNormalDist(100, 10);
         }
 
 

@@ -1,9 +1,6 @@
 package ScriptClasses;
 
 import Nodes.*;
-import Nodes.SpinFlax.BankBowStringNode;
-import Nodes.SpinFlax.SpinFlaxNode;
-import Nodes.StunAlch.*;
 
 import java.util.PriorityQueue;
 
@@ -29,9 +26,6 @@ public class PriorityQueueWrapper {
         this.pq.add(splashNodeSingleton);
     }
 
-    private void swapKeys(ExecutableNode node1, ExecutableNode node2){
-
-    }
 
     public int executeTopNode() throws InterruptedException{
         if(pq != null){
@@ -39,7 +33,7 @@ public class PriorityQueueWrapper {
             swapKeysStunAlch(); //make the next action either a stun if the current action is a stun or vice versa
             MainScript hostScriptRef = (MainScript) PublicStaticFinalConstants.hostScriptReference;
 
-            //if alching, increase the key of a stun error node because a stun is next, vice versa for stuning
+            //if alching, increase the key of a stun error node because a stun is next, vice versa for stunning
             if(nextNode instanceof AlchNode){
                 SplashErrorNode node = SplashErrorNode.getStunErrorNodeInstance();
                 node.attemptDecreaseKey();
@@ -53,6 +47,7 @@ public class PriorityQueueWrapper {
                 pq.remove(node);
                 pq.add(node);
             }
+            //upon error reset keys of nodes
             else if(nextNode instanceof AlchErrorNode || nextNode instanceof SplashErrorNode){
                 resetPQ(); //set keys of all nodes back to default values to resume normal alch->stun->alch... operation
             }
@@ -86,12 +81,6 @@ public class PriorityQueueWrapper {
         this.pq.add(SplashNode.getStunNodeInstance());
         this.pq.add(AlchErrorNode.getAlchErrorNodeInstance());
         this.pq.add(SplashErrorNode.getStunErrorNodeInstance());
-    }
-
-    private void setUpPQForSpinFlax(){
-        this.pq = new PriorityQueue<>();
-        this.pq.add(BankBowStringNode.getBankBowStringNodeInstance());
-        this.pq.add(SpinFlaxNode.getSpinFlaxNodeInstnace());
     }
 
 }
