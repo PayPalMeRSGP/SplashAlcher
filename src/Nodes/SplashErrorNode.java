@@ -11,7 +11,7 @@ import org.osbot.rs07.script.Script;
 import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-//TODO: Implement
+
 public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNode> {
 
     private final int BASE_STARTING_KEY = 19; //odd numbers only, I subtract 2 at a time so key will not every be 0 causing a tie with an alch or stun node.

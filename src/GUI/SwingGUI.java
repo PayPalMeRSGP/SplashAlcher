@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Vector;
 
 public class SwingGUI {
-    private JFrame mainFrame;
-    private JPanel mainPanel;
+    private final JFrame mainFrame;
+    private final JPanel mainPanel;
     private static final String instructions =
             "Select a target NPC and item. Refresh buttons re-polls " +
             "\nsurroundings and inventory for new NPC targets and " +
@@ -41,8 +41,6 @@ public class SwingGUI {
     private JComboBox<NPCWrapper> dropDownNPCs;
     private JComboBox<ItemWrapper> dropDownItems;
     private JComboBox<Spells.NormalSpells> dropDownSplashingSpells;
-
-    private static final HashMap<String, MagicSpell> magicSpellMapper = new HashMap<>();
 
     private boolean isVisable;
 

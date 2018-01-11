@@ -4,7 +4,7 @@ import org.osbot.rs07.api.model.Item;
 
 //these wrapper classes are for displaying the proper text in Jcombobox
 public class ItemWrapper {
-    Item item;
+    private final Item item;
 
     public ItemWrapper(Item item){
         this.item = item;

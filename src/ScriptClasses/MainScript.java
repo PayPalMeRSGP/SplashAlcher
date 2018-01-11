@@ -14,7 +14,7 @@ import java.awt.event.MouseMotionListener;
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
 @ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "cast stun and alchs for high xph", version = 0.3, logo = "")
-public class MainScript extends Script implements MouseListener, MouseMotionListener{
+class MainScript extends Script implements MouseListener, MouseMotionListener{
 
     private PriorityQueueWrapper pqw;
     private long startTime;
@@ -23,8 +23,8 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
     private int xOffset = 0;
     private int yOffset = 0;
-    private int paintRectangleTopLeftX = 315;
-    private int paintRectangleTopLeftY = 0;
+    private final int paintRectangleTopLeftX = 315;
+    private final int paintRectangleTopLeftY = 0;
     private Rectangle paintArea = new Rectangle(paintRectangleTopLeftX, paintRectangleTopLeftY, 200, 130);
     private boolean movePaint = false;
 
@@ -167,10 +167,6 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
     public void incrementSpellCycles(){
         this.spellCycles++;
-    }
-
-    public String getScriptStatus() {
-        return scriptStatus;
     }
 
     public void setScriptStatus(String scriptStatus) {

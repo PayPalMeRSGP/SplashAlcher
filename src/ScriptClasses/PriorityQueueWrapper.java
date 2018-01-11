@@ -4,7 +4,7 @@ import Nodes.*;
 
 import java.util.PriorityQueue;
 
-public class PriorityQueueWrapper {
+class PriorityQueueWrapper {
     private PriorityQueue<ExecutableNode> pq;
 
     PriorityQueueWrapper(){

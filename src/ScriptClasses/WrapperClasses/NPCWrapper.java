@@ -3,7 +3,7 @@ package ScriptClasses.WrapperClasses;
 import org.osbot.rs07.api.model.NPC;
 
 public class NPCWrapper {
-    NPC npc;
+    private final NPC npc;
 
     public NPCWrapper(NPC npc){
         this.npc = npc;
