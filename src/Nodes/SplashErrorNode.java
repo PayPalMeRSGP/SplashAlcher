@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 //TODO: Implement
 public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNode> {
 
-    private final int BASE_STARTING_KEY = 27; //odd numbers only, I subtract 2 at a time so key will not every be 0 causing a tie with an alch or stun node.
+    private final int BASE_STARTING_KEY = 19; //odd numbers only, I subtract 2 at a time so key will not every be 0 causing a tie with an alch or stun node.
     private int currentKey = BASE_STARTING_KEY;
 
     private static SplashErrorNode singleton;
@@ -37,8 +37,8 @@ public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNod
 
     private void misclickNPC(){
         NPC targetNpc = PublicStaticFinalConstants.hostScriptReference.getNpcs().closest(PublicStaticFinalConstants.targetNPC);
-        EntityDestination stunTarget = new EntityDestination(PublicStaticFinalConstants.hostScriptReference.getBot(), targetNpc);
-        Rectangle boundingBox = stunTarget.getBoundingBox();
+        EntityDestination splashTarget = new EntityDestination(PublicStaticFinalConstants.hostScriptReference.getBot(), targetNpc);
+        Rectangle boundingBox = splashTarget.getBoundingBox();
         int MAX_MISCLICK_AMOUNT = 25;
         int misclickBoundX = (int) boundingBox.getX() + MAX_MISCLICK_AMOUNT;
         int misclickBoundY = (int) boundingBox.getY() + MAX_MISCLICK_AMOUNT;

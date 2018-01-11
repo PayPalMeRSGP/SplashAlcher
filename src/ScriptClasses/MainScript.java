@@ -2,7 +2,6 @@ package ScriptClasses;
 
 import GUI.SwingGUI;
 import org.osbot.rs07.api.Inventory;
-import org.osbot.rs07.api.Mouse;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.script.Script;
@@ -14,7 +13,7 @@ import java.awt.event.MouseMotionListener;
 
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "paint_test7", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
+@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "cast stun and alchs for high xph", version = 0.3, logo = "")
 public class MainScript extends Script implements MouseListener, MouseMotionListener{
 
     private PriorityQueueWrapper pqw;
