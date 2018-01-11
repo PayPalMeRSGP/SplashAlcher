@@ -2,6 +2,7 @@ package ScriptClasses;
 
 import GUI.SwingGUI;
 import org.osbot.rs07.api.Inventory;
+import org.osbot.rs07.api.Mouse;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.script.Script;
@@ -9,24 +10,30 @@ import org.osbot.rs07.script.ScriptManifest;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "new paint", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
-public class MainScript extends Script implements MouseListener{
+@ScriptManifest(author = "PayPalMeRSGP", name = "paint_test7", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
+public class MainScript extends Script implements MouseListener, MouseMotionListener{
 
     private PriorityQueueWrapper pqw;
     private long startTime;
     private int spellCycles = 0;
     private String scriptStatus = "";
 
-    private Rectangle paintArea = new Rectangle(317, 207, 200, 130);
+    private int xOffset = 0;
+    private int yOffset = 0;
+    private int paintRectangleTopLeftX = 315;
+    private int paintRectangleTopLeftY = 0;
+    private Rectangle paintArea = new Rectangle(paintRectangleTopLeftX, paintRectangleTopLeftY, 200, 130);
     private boolean movePaint = false;
 
     @Override
     public void onStart() throws InterruptedException {
         super.onStart();
-
+        this.bot.addMouseListener(this);
+        this.bot.getCanvas().addMouseMotionListener(this);
         PublicStaticFinalConstants.setHostScriptReference(this);
 
         SwingGUI gui = new SwingGUI();
@@ -46,6 +53,7 @@ public class MainScript extends Script implements MouseListener{
 
         PublicStaticFinalConstants.setTotalCastableSpells(calculateMaxSpellCyclesPossible(PublicStaticFinalConstants.targetItem));
         log("can cast in total: " + PublicStaticFinalConstants.totalCastableSpells);
+
     }
 
     @Override
@@ -53,7 +61,12 @@ public class MainScript extends Script implements MouseListener{
         return pqw.executeTopNode();
     }
 
-
+    @Override
+    public void onExit() throws InterruptedException {
+        super.onExit();
+        this.bot.removeMouseListener(this);
+        this.bot.getCanvas().removeMouseMotionListener(this);
+    }
 
     @Override
     public void onPaint(Graphics2D g) {
@@ -80,6 +93,7 @@ public class MainScript extends Script implements MouseListener{
         g.drawString("TTL: " + formatTime(TTL), paintArea.x + 10, paintArea.y + 75);
         g.drawString("runtime: " + formatTime(runTime), paintArea.x + 10, paintArea.y + 90);
         g.drawString("status: " + scriptStatus, paintArea.x + 10, paintArea.y + 105);
+
 
     }
 
@@ -174,16 +188,16 @@ public class MainScript extends Script implements MouseListener{
         Point clickPt = e.getPoint();
         if(paintArea.contains(clickPt)){
             movePaint = true;
-        }
-        if(movePaint){
-            paintArea.x = e.getX() - paintArea.x;
-            paintArea.y = e.getY() - paintArea.y;
+            xOffset = clickPt.x - paintArea.x;
+            yOffset = clickPt.y - paintArea.y;
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         movePaint = false;
+        xOffset = 0;
+        yOffset = 0;
     }
 
     @Override
@@ -197,4 +211,20 @@ public class MainScript extends Script implements MouseListener{
     }
 
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if(movePaint){
+            Point mousePos = e.getPoint();
+            paintArea.x = mousePos.x - xOffset;
+            paintArea.y = mousePos.y - yOffset;
+            log("Current pos x: " + mousePos.x + " y: " + mousePos.y);
+            log("Offset x: " + xOffset + " y: " + yOffset);
+            log("Paint Area x: " + paintArea.x + " y: " + paintArea.y);
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
+    }
 }
