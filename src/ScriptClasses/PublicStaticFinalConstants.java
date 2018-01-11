@@ -31,9 +31,6 @@ public class PublicStaticFinalConstants {
     public static final Point ALCH_NOTHING_UPPER_LEFT_BOUNDS = new Point(721,319);
     public static final Point ALCH_NOTHING_LOWER_RIGHT_BOUNDS = new Point(725,337);
 
-    public static final Point ALCH_UPPER_LEFT_BOUND = new Point(720,321);
-    public static final Point ALCH_LOWER_RIGHT_BOUND = new Point(709,336);
-
     public static int targetNPC;
     public static int targetItem;
     public static Spells.NormalSpells splashingSpell;

@@ -27,7 +27,7 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
 
         if(!m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
-            PublicStaticFinalConstants.hostScriptReference.log("client error: could not find high alch, if this happens multiple times in succession the script will stop");
+            PublicStaticFinalConstants.hostScriptReference.log("client error: could not find high alch");
         }
         MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(PublicStaticFinalConstants.BETWEEN_ALCH_MEAN_MS, PublicStaticFinalConstants.BETWEEN_ALCH_STDDEV_MS));
         if(m.isSpellSelected()){

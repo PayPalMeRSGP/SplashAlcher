@@ -2,6 +2,7 @@ package ScriptClasses;
 
 import GUI.SwingGUI;
 import org.osbot.rs07.api.Inventory;
+
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.script.Script;
@@ -13,8 +14,9 @@ import java.awt.event.MouseMotionListener;
 
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "cast stun and alchs for high xph", version = 0.3, logo = "")
-class MainScript extends Script implements MouseListener, MouseMotionListener{
+
+@ScriptManifest(author = "PayPalMeRSGP", name = "paint_test7", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
+public class MainScript extends Script implements MouseListener, MouseMotionListener{
 
     private PriorityQueueWrapper pqw;
     private long startTime;
@@ -23,8 +25,8 @@ class MainScript extends Script implements MouseListener, MouseMotionListener{
 
     private int xOffset = 0;
     private int yOffset = 0;
-    private final int paintRectangleTopLeftX = 315;
-    private final int paintRectangleTopLeftY = 0;
+    private int paintRectangleTopLeftX = 315;
+    private int paintRectangleTopLeftY = 0;
     private Rectangle paintArea = new Rectangle(paintRectangleTopLeftX, paintRectangleTopLeftY, 200, 130);
     private boolean movePaint = false;
 
