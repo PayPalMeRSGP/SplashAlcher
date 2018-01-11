@@ -94,6 +94,11 @@ public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNod
     }
 
     @Override
+    public String getStatus() {
+        return "Splash Antiban";
+    }
+
+    @Override
     public int compareTo(ExecutableNode o) {
         int diff = this.getKey() - o.getKey();
         if(diff == 0){

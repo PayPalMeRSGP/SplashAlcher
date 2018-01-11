@@ -105,6 +105,11 @@ public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode>
         return this.currentKey;
     }
 
+    @Override
+    public String getStatus() {
+        return "Alching Antiban";
+    }
+
 
     @Override
     public int compareTo(ExecutableNode o) {

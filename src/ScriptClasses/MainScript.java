@@ -7,15 +7,21 @@ import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "debug4", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
-public class MainScript extends Script {
+@ScriptManifest(author = "PayPalMeRSGP", name = "new paint", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
+public class MainScript extends Script implements MouseListener{
 
     private PriorityQueueWrapper pqw;
     private long startTime;
     private int spellCycles = 0;
+    private String scriptStatus = "";
+
+    private Rectangle paintArea = new Rectangle(317, 207, 200, 130);
+    private boolean movePaint = false;
 
     @Override
     public void onStart() throws InterruptedException {
@@ -47,6 +53,8 @@ public class MainScript extends Script {
         return pqw.executeTopNode();
     }
 
+
+
     @Override
     public void onPaint(Graphics2D g) {
         super.onPaint(g);
@@ -62,16 +70,16 @@ public class MainScript extends Script {
         g.drawLine(mP.x + 5, mP.y + 5, mP.x - 5, mP.y - 5);
 
         //stats
-        g.setColor(new Color(0,0,0));
-        g.draw(new Rectangle(8, 342, 506, 130));
+        g.setColor(new Color(156,156,156));
+        g.fillRect(paintArea.x, paintArea.y, paintArea.width, paintArea.height);
         g.setColor(new Color(255, 255, 255));
-        g.drawString("Current Level: " + formatValue(currentLevel), 10, 350);
-        g.drawString("casted " + spellCycles + " splash -> alchs", 10, 365);
-        g.drawString("gainedXp: " + formatValue(gainedXp), 10, 380);
-        g.drawString("XP/H: " + formatValue(XPH), 10, 395);
-        g.drawString("TTL: " + formatTime(TTL), 10, 410);
-        g.drawString("runtime: " + formatTime(runTime), 10, 425);
-
+        g.drawString("Current Level: " + formatValue(currentLevel), paintArea.x + 10, paintArea.y + 15);
+        g.drawString("casted " + spellCycles + " splash -> alchs", paintArea.x + 10, paintArea.y + 30);
+        g.drawString("gainedXp: " + formatValue(gainedXp), paintArea.x + 10, paintArea.y + 45);
+        g.drawString("XP/H: " + formatValue(XPH), paintArea.x + 10, paintArea.y + 60);
+        g.drawString("TTL: " + formatTime(TTL), paintArea.x + 10, paintArea.y + 75);
+        g.drawString("runtime: " + formatTime(runTime), paintArea.x + 10, paintArea.y + 90);
+        g.drawString("status: " + scriptStatus, paintArea.x + 10, paintArea.y + 105);
 
     }
 
@@ -146,6 +154,46 @@ public class MainScript extends Script {
 
     public void incrementSpellCycles(){
         this.spellCycles++;
+    }
+
+    public String getScriptStatus() {
+        return scriptStatus;
+    }
+
+    public void setScriptStatus(String scriptStatus) {
+        this.scriptStatus = scriptStatus;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        Point clickPt = e.getPoint();
+        if(paintArea.contains(clickPt)){
+            movePaint = true;
+        }
+        if(movePaint){
+            paintArea.x = e.getX() - paintArea.x;
+            paintArea.y = e.getY() - paintArea.y;
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        movePaint = false;
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 
 

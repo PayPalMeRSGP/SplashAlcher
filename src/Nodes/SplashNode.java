@@ -34,7 +34,7 @@ public class SplashNode implements ExecutableNode, Comparable<ExecutableNode>{
         if(PublicStaticFinalConstants.canCast()){
             waitForMagicTab();
             if(!m.castSpellOnEntity(PublicStaticFinalConstants.splashingSpell, npc)){
-                PublicStaticFinalConstants.hostScriptReference.stop();
+                PublicStaticFinalConstants.hostScriptReference.log("client error: could not find npc");
             }
 
             if(AlchErrorNode.getAlchErrorNodeInstance().getKey() <= 0){ //alch error is next, let next node handle moving mouse
@@ -87,6 +87,11 @@ public class SplashNode implements ExecutableNode, Comparable<ExecutableNode>{
     @Override
     public int getKey() {
         return this.currentKey;
+    }
+
+    @Override
+    public String getStatus() {
+        return "Splashing Spell";
     }
 
     @Override

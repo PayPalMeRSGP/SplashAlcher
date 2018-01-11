@@ -26,12 +26,17 @@ public class PriorityQueueWrapper {
         this.pq.add(splashNodeSingleton);
     }
 
+    public ExecutableNode peekTopNode(){
+        return this.pq.peek();
+    }
+
 
     public int executeTopNode() throws InterruptedException{
         if(pq != null){
             ExecutableNode nextNode = pq.peek();
             swapKeysStunAlch(); //make the next action either a stun if the current action is a stun or vice versa
             MainScript hostScriptRef = (MainScript) PublicStaticFinalConstants.hostScriptReference;
+            hostScriptRef.setScriptStatus(nextNode.getStatus());
 
             //if alching, increase the key of a stun error node because a stun is next, vice versa for stunning
             if(nextNode instanceof AlchNode){

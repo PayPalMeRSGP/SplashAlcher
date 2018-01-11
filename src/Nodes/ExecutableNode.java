@@ -9,6 +9,7 @@ public interface ExecutableNode {
     void resetKey();
     void setKey(int key);
     int getKey();
+    String getStatus();
     String toString();
 
 }
