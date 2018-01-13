@@ -15,7 +15,7 @@ import java.awt.event.MouseMotionListener;
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "paint_test7", info = "cast stun and alchs for high xph", version = 0.3, logo = "")
+@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "cast stun and alchs for high xph", version = 0.4, logo = "")
 public class MainScript extends Script implements MouseListener, MouseMotionListener{
 
     private PriorityQueueWrapper pqw;
@@ -177,7 +177,7 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        //not used
     }
 
     @Override
@@ -199,12 +199,12 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        //not used
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        //not used
     }
 
 
@@ -214,14 +214,11 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
             Point mousePos = e.getPoint();
             paintArea.x = mousePos.x - xOffset;
             paintArea.y = mousePos.y - yOffset;
-            log("Current pos x: " + mousePos.x + " y: " + mousePos.y);
-            log("Offset x: " + xOffset + " y: " + yOffset);
-            log("Paint Area x: " + paintArea.x + " y: " + paintArea.y);
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        //not used
     }
 }

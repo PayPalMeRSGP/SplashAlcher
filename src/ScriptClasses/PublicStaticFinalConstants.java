@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PublicStaticFinalConstants {
-    public static final String SCRIPT_NAME = "curse() || stun() || ... -> alch()";
+    public static final String SCRIPT_NAME = "Splash_Alcher";
     public static final int RS_GAME_TICK_MS = 603;
     public static final double BETWEEN_ALCH_STDDEV_MS = 20;
     public static final double BETWEEN_ALCH_MEAN_MS = 215;
