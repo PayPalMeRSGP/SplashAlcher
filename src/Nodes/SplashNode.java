@@ -33,8 +33,8 @@ public class SplashNode implements ExecutableNode, Comparable<ExecutableNode>{
         NPC npc = PublicStaticFinalConstants.hostScriptReference.getNpcs().closest(PublicStaticFinalConstants.targetNPC);
         if(PublicStaticFinalConstants.canCast()){
             waitForMagicTab();
-            if(!m.castSpellOnEntity(PublicStaticFinalConstants.splashingSpell, npc)){
-                PublicStaticFinalConstants.hostScriptReference.log("client error: could not find npc");
+            if(!m.castSpellOnEntity(PublicStaticFinalConstants.splashingSpell, npc)){ //sometimes this will fail, but the next onLoop call should fix
+                PublicStaticFinalConstants.hostScriptReference.log("error: could not find npc");
             }
 
             if(AlchErrorNode.getAlchErrorNodeInstance().getKey() <= 0){ //alch error is next, let next node handle moving mouse
@@ -45,6 +45,7 @@ public class SplashNode implements ExecutableNode, Comparable<ExecutableNode>{
             }
         }
         else{
+            PublicStaticFinalConstants.hostScriptReference.log("Ran out of casts, stopping script");
             PublicStaticFinalConstants.hostScriptReference.stop();
         }
         return 0;

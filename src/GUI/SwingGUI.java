@@ -206,7 +206,11 @@ public class SwingGUI {
                     Spells.NormalSpells spell = (Spells.NormalSpells) dropDownSplashingSpells.getSelectedItem();
                     assert npc != null;
                     assert item != null;
-                    passParametersBack(npc.getItemID(), item.getItemID(), spell);
+                    assert spell != null;
+
+                    UserSelectedResults results = passParametersBack(npc.getItemID(), item.getItemID(), spell);
+                    PublicStaticFinalConstants.setUserSettings(results);
+
                     isVisable = false;
                     mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     SwingGUI.this.mainFrame.dispose();
@@ -249,10 +253,8 @@ public class SwingGUI {
         return new Vector<>();
     }
 
-    private void passParametersBack(int npc, int item, Spells.NormalSpells spell){
-        PublicStaticFinalConstants.setTargetNPC(npc);
-        PublicStaticFinalConstants.setTargetItem(item);
-        PublicStaticFinalConstants.setSplashingSpell(spell);
+    private UserSelectedResults passParametersBack(int npc, int item, Spells.NormalSpells spell){
+        return new UserSelectedResults(npc, item, spell);
     }
 
     private void closeAndStopScript(){

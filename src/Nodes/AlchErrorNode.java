@@ -62,8 +62,8 @@ public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode>
     private void alchNothing() throws InterruptedException {
         Mouse mouse = PublicStaticFinalConstants.hostScriptReference.getMouse();
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
-        int randX = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUNDS.x, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUNDS.x);
-        int randY = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUNDS.y, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUNDS.y);
+        int randX = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUND.x, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUND.x);
+        int randY = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUND.y, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUND.y);
         if(mouse.move(randX, randY)){
             MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(30, 5));
             if(m.canCast(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){

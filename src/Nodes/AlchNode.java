@@ -26,8 +26,8 @@ public class AlchNode implements ExecutableNode, Comparable<ExecutableNode> {
     public int executeNodeAction() throws InterruptedException {
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
 
-        if(!m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
-            PublicStaticFinalConstants.hostScriptReference.log("client error: could not find high alch");
+        if(!m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){ //sometimes this will fail, but the next onLoop call should fix
+            PublicStaticFinalConstants.hostScriptReference.log("error: could not find high alch");
         }
         MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(PublicStaticFinalConstants.BETWEEN_ALCH_MEAN_MS, PublicStaticFinalConstants.BETWEEN_ALCH_STDDEV_MS));
         if(m.isSpellSelected()){
