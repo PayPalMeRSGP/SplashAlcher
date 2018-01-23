@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Splash_Alcher">
+    <output-path>$USER_HOME$/OSBot/Scripts</output-path>
+    <root id="archive" name="Splash_Alcher.jar">
+      <element id="module-output" name="StunAlch" />
+    </root>
+  </artifact>
+</component>

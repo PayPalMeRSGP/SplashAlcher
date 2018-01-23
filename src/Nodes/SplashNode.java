@@ -92,7 +92,7 @@ public class SplashNode implements ExecutableNode, Comparable<ExecutableNode>{
 
     @Override
     public String getStatus() {
-        return "Splashing Spell";
+        return "Splashing";
     }
 
     @Override

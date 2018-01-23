@@ -3,9 +3,11 @@ package ScriptClasses;
 import GUI.SwingGUI;
 import org.osbot.rs07.api.Inventory;
 
+import org.osbot.rs07.api.ui.Message;
 import org.osbot.rs07.api.ui.RS2Widget;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.api.ui.Spells;
+import org.osbot.rs07.listener.MessageListener;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import java.awt.*;
@@ -17,8 +19,8 @@ import java.util.List;
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
 
-@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "cast stun and alchs for high xph", version = 0.4, logo = "")
-public class MainScript extends Script implements MouseListener, MouseMotionListener{
+@ScriptManifest(author = "PayPalMeRSGP", name = "onMsgTest", info = "splashes a debuff spell while alching for high xph", version = 0.4, logo = "")
+public class MainScript extends Script implements MouseListener, MouseMotionListener, MessageListener{
 
     private PriorityQueueWrapper pqw;
     private long startTime;
@@ -86,6 +88,7 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
         this.bot.addMouseListener(this);
         this.bot.getCanvas().addMouseMotionListener(this);
         PublicStaticFinalConstants.setHostScriptReference(this);
+        this.bot.addMessageListener(this::onMessage);
 
         //start gui, upon exit, user arguments will become set
         SwingGUI gui = new SwingGUI();
@@ -153,6 +156,16 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
                 stop();
                 log("DEBUG1: no spell selected, in switch statement");
                 return 0; //error?
+        }
+    }
+
+    @Override
+    public void onMessage(Message msg) throws InterruptedException {
+        super.onMessage(msg);
+        if(msg.getType() == Message.MessageType.GAME){
+            if(msg.getMessage().contains("You do not have enough")){
+                log("recieved rune shortage msg.");
+            }
         }
     }
 
