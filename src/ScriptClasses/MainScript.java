@@ -1,6 +1,10 @@
 package ScriptClasses;
 
 import GUI.SwingGUI;
+import Nodes.AlchErrorNode;
+import Nodes.AlchNode;
+import Nodes.SplashErrorNode;
+import Nodes.SplashNode;
 import org.osbot.rs07.api.Inventory;
 
 import org.osbot.rs07.api.ui.Message;
@@ -19,10 +23,10 @@ import java.util.List;
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "onMsgTest", info = "splashes a debuff spell while alching for high xph", version = 0.4, logo = "")
+@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.4, logo = "")
 public class MainScript extends Script implements MouseListener, MouseMotionListener, MessageListener{
 
-    private PriorityQueueWrapper pqw;
+    private NodeExecutor executor;
     private long startTime;
     private int spellCycles = 0;
     private String scriptStatus = "";
@@ -44,7 +48,7 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
     @Override
     public int onLoop() throws InterruptedException {
-        return pqw.executeTopNode();
+        return executor.executeNodeThenTraverse();
     }
 
     @Override
@@ -88,7 +92,7 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
         this.bot.addMouseListener(this);
         this.bot.getCanvas().addMouseMotionListener(this);
         PublicStaticFinalConstants.setHostScriptReference(this);
-        this.bot.addMessageListener(this::onMessage);
+        this.bot.addMessageListener(this);
 
         //start gui, upon exit, user arguments will become set
         SwingGUI gui = new SwingGUI();
@@ -101,62 +105,19 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
             e.printStackTrace();
         }
 
-        //calculate how many times we can splash alch
-        PublicStaticFinalConstants.setTotalCastableSpells(calculateMaxSpellCyclesPossible(PublicStaticFinalConstants.targetItem));
-        log("can cast in total: " + PublicStaticFinalConstants.totalCastableSpells);
+        //prepare graph for main loop execution
+        executor = new NodeExecutor(AlchNode.getAlchNodeInstance());
+        executor.addEdgeToNode(AlchNode.getAlchNodeInstance(), SplashNode.getSplashNodeInstance(), 1);
+        executor.addEdgeToNode(SplashNode.getSplashNodeInstance(), AlchNode.getAlchNodeInstance(), 95);
+        executor.addEdgeToNode(SplashNode.getSplashNodeInstance(), AlchErrorNode.getAlchErrorNodeInstance(), 5);
 
-        //prepare for main loop execution
-        pqw = new PriorityQueueWrapper();
+        executor.addEdgeToNode(SplashErrorNode.getSplashErrorNodeInstance(), AlchNode.getAlchNodeInstance(), 1);
+        executor.addEdgeToNode(AlchErrorNode.getAlchErrorNodeInstance(), SplashNode.getSplashNodeInstance(), 1);
+
+
         startTime = System.currentTimeMillis();
         getExperienceTracker().start(Skill.MAGIC);
         getBot().addPainter(MainScript.this);
-    }
-
-    private int calculateMaxSpellCyclesPossible(int alchingItemID) throws InterruptedException {
-        Inventory inv = getInventory();
-        int natureCount = (int) inv.getAmount(561);
-        int alchingItemCount = (int) inv.getAmount(alchingItemID);
-        boolean usingSoulRune = PublicStaticFinalConstants.splashingSpell != Spells.NormalSpells.CURSE;
-        int bodyOrSoulCount = (int) (usingSoulRune ? inv.getAmount(566) : inv.getAmount(559));
-        int fireCount = (int) inv.getAmount(554, 4699); //fire and lava
-
-        //checking if player has earth and water runes or a staff
-        boolean canCastSplashSpell = false;
-        if(PublicStaticFinalConstants.splashingSpell != null){
-            canCastSplashSpell = getMagic().canCast(PublicStaticFinalConstants.splashingSpell, true);
-        }
-        else{
-            log("DEBUG0: no spell selected");
-            stop();
-        }
-
-        int earthCount = (int) inv.getAmount(557);
-        if(earthCount == 0 && canCastSplashSpell){
-            earthCount = Integer.MAX_VALUE;
-        }
-
-        int waterCount = (int) inv.getAmount(555);
-        if(waterCount == 0 && canCastSplashSpell){
-            waterCount = Integer.MAX_VALUE;
-        }
-
-        log("nature: " + natureCount + " item: " + alchingItemCount + " fire: " + fireCount);
-        log("body/soul: " + bodyOrSoulCount + " earth: " + earthCount + " water: " + waterCount);
-
-        switch(PublicStaticFinalConstants.splashingSpell){
-            case CURSE:
-                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/2, earthCount/3) - 1;
-            case VULNERABILITY:
-                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/5, earthCount/5) - 1;
-            case ENFEEBLE:
-                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/8, earthCount/8) - 1;
-            case STUN:
-                return min(alchingItemCount, natureCount, fireCount/5, bodyOrSoulCount, waterCount/12, earthCount/12) - 1;
-            default:
-                stop();
-                log("DEBUG1: no spell selected, in switch statement");
-                return 0; //error?
-        }
     }
 
     @Override
@@ -165,18 +126,9 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
         if(msg.getType() == Message.MessageType.GAME){
             if(msg.getMessage().contains("You do not have enough")){
                 log("recieved rune shortage msg.");
+                stop();
             }
         }
-    }
-
-    private int min(int... args){
-        int min = args[0];
-        for(int num: args){
-            if (num < min) {
-                min = num;
-            }
-        }
-        return min;
     }
 
     private String formatTime(final long ms){

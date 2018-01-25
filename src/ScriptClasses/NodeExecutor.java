@@ -1,18 +1,19 @@
 package ScriptClasses;
 
 import Nodes.ExecutableNode;
+import Nodes.TestNode;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NodesExecutor {
+public class NodeExecutor {
     private class NodeEdge {
         ExecutableNode u; //source node
         ExecutableNode v; //edge to some other node
         int edgeExecutionWeight;
 
-        public NodeEdge(ExecutableNode u, ExecutableNode v, int edgeExecutionWeight) {
+        NodeEdge(ExecutableNode u, ExecutableNode v, int edgeExecutionWeight) {
             this.u = u;
             this.v = v;
             this.edgeExecutionWeight = edgeExecutionWeight;
@@ -22,7 +23,7 @@ public class NodesExecutor {
     private HashMap<ExecutableNode, LinkedList<NodeEdge>> adjMap;
     private ExecutableNode current;
 
-    public NodesExecutor(ExecutableNode startingNode){
+    public NodeExecutor(ExecutableNode startingNode){
         adjMap = new HashMap<>();
         current = startingNode;
     }
@@ -58,21 +59,56 @@ public class NodesExecutor {
 
     public int executeNodeThenTraverse() throws InterruptedException {
         int onLoopSleepTime = current.executeNodeAction();
-        ExecutableNode nextNode;
+        traverseToNextNode();
         return onLoopSleepTime;
     }
 
     private void traverseToNextNode(){
+        // Coding pattern for random percentage branching
+        // https://stackoverflow.com/questions/45836397/coding-pattern-for-random-percentage-branching?noredirect=1&lq=1
         if(current != null){
             LinkedList<NodeEdge> edges = adjMap.get(current);
             int combinedWeight = edges.stream().mapToInt(edge -> edge.edgeExecutionWeight).sum();
-            int roll = ThreadLocalRandom.current().nextInt(1, combinedWeight + 1);
-
+            int sum = 0;
+            int roll = ThreadLocalRandom.current().nextInt(1, combinedWeight+1);
+            NodeEdge selectedEdge = null;
+            for(NodeEdge edge: edges){
+                sum += edge.edgeExecutionWeight;
+                if(sum >= roll){
+                    selectedEdge = edge;
+                    break;
+                }
+            }
+            if(selectedEdge == null){
+                selectedEdge = edges.getLast();
+            }
+            current = selectedEdge.v;
         }
 
     }
 
+
+    //testing
     public static void main(String[] args){
+        TestNode node1 = new TestNode();
+        TestNode node2 = new TestNode();
+        TestNode node3 = new TestNode();
+        TestNode node4 = new TestNode();
+
+        NodeExecutor nodeExecutor = new NodeExecutor(node1);
+        nodeExecutor.addEdgeToNode(node1, node2, 1);
+        nodeExecutor.addEdgeToNode(node1, node3, 3);
+        nodeExecutor.addEdgeToNode(node3, node1, 1);
+        nodeExecutor.addEdgeToNode(node2, node1, 1);
+
+
+        try {
+            for(int i = 0; i < 100; i++){
+                nodeExecutor.executeNodeThenTraverse();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

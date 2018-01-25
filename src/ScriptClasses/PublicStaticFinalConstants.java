@@ -55,7 +55,7 @@ public class PublicStaticFinalConstants {
     private PublicStaticFinalConstants(){} //meant to be a constant provider, no constructor
 
     public static boolean canCast(){
-        return totalCastableSpells-- > 0;
+        return true;
     }
 
     public static long randomNormalDist(double mean, double stddev){
@@ -110,7 +110,6 @@ public class PublicStaticFinalConstants {
         hostScriptReference.getMagic().open();
         if(splashSpellWidgetDestination == null){
             if(hostScriptReference != null){
-                List<RS2Widget> widgetList = hostScriptReference.getWidgets().containingSprite(NORMAL_SPELLBOOK_ROOT_ID, HIGH_ALCH_SPRITE_ID);
                 highAlchWidgetDestination = getWidgetDestinationForSpell(HIGH_ALCH_SPRITE_ID);
             }
             else{
