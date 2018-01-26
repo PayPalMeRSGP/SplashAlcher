@@ -2,17 +2,11 @@ package ScriptClasses;
 
 import GUI.SwingGUI;
 import GUI.UserSelectedResults;
-import Nodes.AlchErrorNode;
-import Nodes.AlchNode;
-import Nodes.SplashErrorNode;
-import Nodes.SplashNode;
-import org.osbot.Al;
-import org.osbot.rs07.api.Inventory;
+import Nodes.*;
 
 import org.osbot.rs07.api.ui.Message;
 import org.osbot.rs07.api.ui.RS2Widget;
 import org.osbot.rs07.api.ui.Skill;
-import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.listener.MessageListener;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
@@ -28,7 +22,7 @@ import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 @ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
 public class MainScript extends Script implements MouseListener, MouseMotionListener, MessageListener{
 
-    private NodeExecutor executor;
+    private GraphBasedNodeExecutor executor;
     private long startTime;
     private int spellCycles = 0;
     private String scriptStatus = "";
@@ -113,12 +107,17 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
             AlchNode alch = new AlchNode(results.getItemID(), this);
             SplashNode splash = new SplashNode(results.getSplashingSpell(), results.getNpcID(), this);
             AlchErrorNode alchError = AlchErrorNode.getAlchErrorNodeInstance();
+            IdleAntiban antiban = new IdleAntiban(this);
 
-            executor = new NodeExecutor(alch);
-            executor.addEdgeToNode(alch, splash, 1);
+            executor = new GraphBasedNodeExecutor(alch);
+            executor.addEdgeToNode(alch, splash, 99);
+            executor.addEdgeToNode(alch, antiban, 1);
             executor.addEdgeToNode(splash, alch, 95);
-            executor.addEdgeToNode(splash, alchError, 5);
+            executor.addEdgeToNode(splash, antiban, 1);
+            executor.addEdgeToNode(splash, alchError, 4);
             executor.addEdgeToNode(alchError, splash, 1);
+            executor.addEdgeToNode(antiban, alch, 50);
+            executor.addEdgeToNode(antiban, splash, 50);
 
             startTime = System.currentTimeMillis();
             getExperienceTracker().start(Skill.MAGIC);

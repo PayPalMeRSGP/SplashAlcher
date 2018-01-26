@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NodeExecutor {
+public class GraphBasedNodeExecutor {
     private class NodeEdge {
         ExecutableNode u; //source node
         ExecutableNode v; //edge to some other node
-        int edgeExecutionWeight;
+        int edgeExecutionWeight; //how often do we randomly traverse to this node, higher = more frequent. Relative to edgeExecutionWeights of sibling nodes.
+        //ex: if node A had outgoing edges with weights 2, 3, 5. Then edge with weight 2 will be executed 20% of the time, 3 -> 30%, and 5 -> 50%.
 
         NodeEdge(ExecutableNode u, ExecutableNode v, int edgeExecutionWeight) {
             this.u = u;
@@ -23,7 +24,7 @@ public class NodeExecutor {
     private HashMap<ExecutableNode, LinkedList<NodeEdge>> adjMap;
     private ExecutableNode current;
 
-    public NodeExecutor(ExecutableNode startingNode){
+    public GraphBasedNodeExecutor(ExecutableNode startingNode){
         adjMap = new HashMap<>();
         current = startingNode;
     }
@@ -68,6 +69,10 @@ public class NodeExecutor {
         // https://stackoverflow.com/questions/45836397/coding-pattern-for-random-percentage-branching?noredirect=1&lq=1
         if(current != null){
             LinkedList<NodeEdge> edges = adjMap.get(current);
+            if(edges.size() == 0){
+                PublicStaticFinalConstants.hostScriptReference.log("WARN: node: " + current.getClass().getCanonicalName() + " has no outgoing edges! This node will be executed again continuously!");
+                return;
+            }
             int combinedWeight = edges.stream().mapToInt(edge -> edge.edgeExecutionWeight).sum();
             int sum = 0;
             int roll = ThreadLocalRandom.current().nextInt(1, combinedWeight+1);
@@ -95,7 +100,7 @@ public class NodeExecutor {
         TestNode node3 = new TestNode();
         TestNode node4 = new TestNode();
 
-        NodeExecutor nodeExecutor = new NodeExecutor(node1);
+        GraphBasedNodeExecutor nodeExecutor = new GraphBasedNodeExecutor(node1);
         nodeExecutor.addEdgeToNode(node1, node2, 1);
         nodeExecutor.addEdgeToNode(node1, node3, 3);
         nodeExecutor.addEdgeToNode(node3, node1, 1);
