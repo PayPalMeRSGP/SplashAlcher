@@ -1,5 +1,6 @@
 package Nodes;
 
+import ScriptClasses.MainScript;
 import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.ui.RS2Widget;
 import org.osbot.rs07.api.ui.Tab;
@@ -25,6 +26,7 @@ public class IdleAntiban implements ExecutableNode {
 
     @Override
     public int executeNodeAction() throws InterruptedException {
+        setScriptStatus();
         int rand = ThreadLocalRandom.current().nextInt(0,2);
         if(rand == 0){
             checkMageXp();
@@ -42,6 +44,12 @@ public class IdleAntiban implements ExecutableNode {
                 MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(3000, 1000));
             }
             hostScriptReference.getTabs().open(Tab.INVENTORY);
+        }
+    }
+
+    private void setScriptStatus(){
+        if(PublicStaticFinalConstants.hostScriptReference instanceof MainScript){
+            ((MainScript) PublicStaticFinalConstants.hostScriptReference).setScriptStatus(NODE_STATUS);
         }
     }
 
