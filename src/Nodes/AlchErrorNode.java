@@ -1,5 +1,6 @@
 package Nodes;
 
+import ScriptClasses.MainScript;
 import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Magic;
 import org.osbot.rs07.api.Mouse;
@@ -10,10 +11,9 @@ import org.osbot.rs07.script.MethodProvider;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode> {
+public class AlchErrorNode implements ExecutableNode{
 
-    private final int BASE_STARTING_KEY = 27; //odd numbers only, I subtract 2 at a time so key will not every be 0 causing a tie with an alch or stun node.
-    private int currentKey = BASE_STARTING_KEY;
+    private final static String NODE_STATUS = "Alching Antiban";
 
     private static AlchErrorNode alchErrorNodeSingleton;
 
@@ -60,77 +60,32 @@ public class AlchErrorNode implements ExecutableNode, Comparable<ExecutableNode>
     }
 
     private void alchNothing() throws InterruptedException {
+        setScriptStatus();
         Mouse mouse = PublicStaticFinalConstants.hostScriptReference.getMouse();
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
         int randX = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUND.x, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUND.x);
         int randY = ThreadLocalRandom.current().nextInt(PublicStaticFinalConstants.ALCH_NOTHING_UPPER_LEFT_BOUND.y, PublicStaticFinalConstants.ALCH_NOTHING_LOWER_RIGHT_BOUND.y);
         if(mouse.move(randX, randY)){
-            MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(30, 5));
+            MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(100, 10));
             if(m.canCast(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
                 m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
-                MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(80, 8));
+                MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(150, 10));
                 mouse.click(randX, randY, false); //deselect
-                MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(1000, 200)); //pause to emulate player realizing that he just alched nothing
+                MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(2500, 500)); //pause to emulate player realizing that he just alched nothing
                 m.open(); //reopen magic tab
             }
         }
     }
 
-    @Override
-    public void increaseKey() {
-        this.currentKey++;
-    }
-
-    @Override
-    public void attemptDecreaseKey() {
-        int randNum = ThreadLocalRandom.current().nextInt(0, 10);
-        if(randNum >= 7){ //70% change to decrement
-            this.currentKey-=2;
+    private void setScriptStatus(){
+        if(PublicStaticFinalConstants.hostScriptReference instanceof MainScript){
+            ((MainScript) PublicStaticFinalConstants.hostScriptReference).setScriptStatus(NODE_STATUS);
         }
-
-    }
-
-    @Override
-    public void resetKey() {
-        this.currentKey = BASE_STARTING_KEY;
-    }
-
-    @Override
-    public void setKey(int key) {
-
-    }
-
-    @Override
-    public int getKey() {
-        return this.currentKey;
     }
 
     @Override
     public String getStatus() {
-        return "Alching Antiban";
+        return NODE_STATUS;
     }
 
-
-    @Override
-    public int compareTo(ExecutableNode o) {
-        int diff = this.getKey() - o.getKey();
-        if(diff == 0){
-            if(o instanceof AlchNode){
-                return -1;
-            }
-            else if(o instanceof SplashNode){
-                return 1;
-            }
-        }
-        return diff;
-        /*if tie, give priority to the error node
-          because if a tie exists between an alch error or alch node. We do alch error first then an successful alch to
-          emulate a player making a mistake then correcting it.
-         */
-    }
-
-    @Override
-    public String toString(){
-        return "Type: AlchError, CurrentKey: " + currentKey;
-    }
 }

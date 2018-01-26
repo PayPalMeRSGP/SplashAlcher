@@ -1,11 +1,10 @@
 package GUI;
 
-import ScriptClasses.WrapperClasses.ItemWrapper;
-import ScriptClasses.WrapperClasses.NPCWrapper;
+import GUI.WrapperClasses.ItemWrapper;
+import GUI.WrapperClasses.NPCWrapper;
 import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
-import org.osbot.rs07.api.ui.MagicSpell;
 import org.osbot.rs07.api.ui.Spells;
 
 import javax.swing.*;
@@ -43,7 +42,10 @@ public class SwingGUI {
 
     private boolean isVisable;
 
-    public SwingGUI(){
+    private UserSelectedResults results;
+
+    public SwingGUI(UserSelectedResults results){
+        this.results = results;
         mainFrame = new JFrame(PublicStaticFinalConstants.SCRIPT_NAME);
         mainFrame.setSize(600, 400);
 
@@ -208,8 +210,7 @@ public class SwingGUI {
                     assert item != null;
                     assert spell != null;
 
-                    UserSelectedResults results = passParametersBack(npc.getItemID(), item.getItemID(), spell);
-                    PublicStaticFinalConstants.setUserSettings(results);
+                    results.setParameters(npc.getItemID(), item.getItemID(), spell);
 
                     isVisable = false;
                     mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -253,10 +254,6 @@ public class SwingGUI {
         return new Vector<>();
     }
 
-    private UserSelectedResults passParametersBack(int npc, int item, Spells.NormalSpells spell){
-        return new UserSelectedResults(npc, item, spell);
-    }
-
     private void closeAndStopScript(){
         mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         if(PublicStaticFinalConstants.hostScriptReference != null){
@@ -271,7 +268,7 @@ public class SwingGUI {
     }
 
     public static void main(String[] args){ //testing gui
-        SwingGUI swingLayoutDemo = new SwingGUI();
+        SwingGUI swingLayoutDemo = new SwingGUI(new UserSelectedResults());
     }
 
 }

@@ -1,5 +1,6 @@
 package Nodes;
 
+import ScriptClasses.MainScript;
 import ScriptClasses.PublicStaticFinalConstants;
 import org.osbot.rs07.api.Mouse;
 import org.osbot.rs07.api.model.NPC;
@@ -12,16 +13,15 @@ import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNode> {
+public class SplashErrorNode implements ExecutableNode {
 
-    private final int BASE_STARTING_KEY = 27; //odd numbers only, I subtract 2 at a time so key will not every be 0 causing a tie with an alch or stun node.
-    private int currentKey = BASE_STARTING_KEY;
+    private final static String NODE_STATUS = "Splashing Antiban";
 
     private static SplashErrorNode singleton;
 
     private SplashErrorNode(){}
 
-    public static SplashErrorNode getStunErrorNodeInstance(){
+    public static SplashErrorNode getSplashErrorNodeInstance(){
         if(singleton == null){
             singleton = new SplashErrorNode();
         }
@@ -30,9 +30,9 @@ public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNod
 
     @Override
     public int executeNodeAction() {
-        PublicStaticFinalConstants.hostScriptReference.log("committing misclickNPC artificial error");
+        setScriptStatus();
         misclickNPC();
-        return (int) PublicStaticFinalConstants.randomNormalDist(200,30);
+        return (int) PublicStaticFinalConstants.randomNormalDist(2500,500);
     }
 
     private void misclickNPC(){
@@ -62,58 +62,17 @@ public class SplashErrorNode implements ExecutableNode, Comparable<ExecutableNod
                 mouse.click(mouseRectangleDest);
             }
         }
-
     }
 
-    @Override
-    public void increaseKey() {
-        currentKey++;
-    }
-
-    @Override
-    public void attemptDecreaseKey() {
-        int randNum = ThreadLocalRandom.current().nextInt(0, 10);
-        if(randNum >= 7){ //70% change to decrement
-            this.currentKey -= 2;
+    private void setScriptStatus(){
+        if(PublicStaticFinalConstants.hostScriptReference instanceof MainScript){
+            ((MainScript) PublicStaticFinalConstants.hostScriptReference).setScriptStatus(NODE_STATUS);
         }
-    }
-
-    @Override
-    public void resetKey() {
-        currentKey = BASE_STARTING_KEY;
-    }
-
-    @Override
-    public void setKey(int key) {
-        currentKey = key;
-    }
-
-    @Override
-    public int getKey() {
-        return this.currentKey;
     }
 
     @Override
     public String getStatus() {
-        return "Splash Antiban";
+        return NODE_STATUS;
     }
 
-    @Override
-    public int compareTo(ExecutableNode o) {
-        int diff = this.getKey() - o.getKey();
-        if(diff == 0){
-            if(o instanceof AlchNode){
-                return 1;
-            }
-            else if(o instanceof SplashNode){
-                return -1;
-            }
-        }
-        return diff;
-    }
-
-    @Override
-    public String toString(){
-        return "Type: SplashErrorNode, CurrentKey: " + currentKey;
-    }
 }
