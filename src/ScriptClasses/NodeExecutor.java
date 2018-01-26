@@ -1,7 +1,7 @@
 package ScriptClasses;
 
 import Nodes.ExecutableNode;
-import Nodes.TestNode;
+//import Nodes.TestNode;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -89,7 +89,7 @@ public class NodeExecutor {
 
 
     //testing
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         TestNode node1 = new TestNode();
         TestNode node2 = new TestNode();
         TestNode node3 = new TestNode();
@@ -110,7 +110,7 @@ public class NodeExecutor {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
 
 }

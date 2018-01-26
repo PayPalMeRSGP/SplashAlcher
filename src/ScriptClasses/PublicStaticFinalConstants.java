@@ -1,6 +1,5 @@
 package ScriptClasses;
 
-import GUI.UserSelectedResults;
 import org.osbot.rs07.api.ui.RS2Widget;
 import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.input.mouse.WidgetDestination;
@@ -18,15 +17,11 @@ public class PublicStaticFinalConstants {
 
     //used to obtain widget destinations
     public static final int NORMAL_SPELLBOOK_ROOT_ID = 218;
-    public static final int HIGH_ALCH_SPRITE_ID = 41;
+
     public static final int CURSE_SPRITE_ID = 24;
     public static final int VULERABILITY_SPRITE_ID = 56;
     public static final int ENFEEBLE_SPRITE_ID = 57;
     public static final int STUN_SPRITE_ID = 58;
-
-    //used to hover over the next spell
-    public static WidgetDestination highAlchWidgetDestination = null;
-    public static WidgetDestination splashSpellWidgetDestination = null;
 
     //leave these here for now in case I need them again
     public static final Point CURSE_UPPER_LEFT_BOUND = new Point(658, 248);
@@ -48,7 +43,6 @@ public class PublicStaticFinalConstants {
     public static int targetNPC;
     public static int targetItem;
     public static Spells.NormalSpells splashingSpell;
-    public static int totalCastableSpells;
 
     public static Script hostScriptReference;
 
@@ -62,64 +56,34 @@ public class PublicStaticFinalConstants {
         return (long) Math.abs(new Random().nextGaussian() * stddev + mean); //in case we get a negative number
     }
 
-    public static boolean hoverOverSplashSpell(){
-        if(splashSpellWidgetDestination != null){
-            return hostScriptReference.getMouse().move(splashSpellWidgetDestination);
+    public static WidgetDestination getSplashSpellWidgetDestination(Spells.NormalSpells splashingSpell){
+        if(hostScriptReference != null){
+            hostScriptReference.log("setting " + splashingSpell + " as splashing spell");
+            switch (splashingSpell){
+                case CURSE:
+                    return getWidgetDestinationForSpell(CURSE_SPRITE_ID);
+
+                case VULNERABILITY:
+                    return getWidgetDestinationForSpell(VULERABILITY_SPRITE_ID);
+
+                case ENFEEBLE:
+                    return getWidgetDestinationForSpell(ENFEEBLE_SPRITE_ID);
+
+                case STUN:
+                    return getWidgetDestinationForSpell(STUN_SPRITE_ID);
+
+                default:
+                    throwIllegalStateException("hit default case in splashing spell");
+            }
         }
         else{
-            throwIllegalStateException("splashSpellWidgetDestination is null");
-            return false;
+            throwIllegalStateException("hostScriptReference is null");
         }
+        return null;
     }
 
-    //meant to be called once at start of script
-    private static void setSplashSpellWidgetDestination(){
-        if(splashSpellWidgetDestination == null){
-            if(hostScriptReference != null){
-
-                hostScriptReference.log("setting " + splashingSpell + " as splashing spell");
-                switch (splashingSpell){
-                    case CURSE:
-                        splashSpellWidgetDestination = getWidgetDestinationForSpell(CURSE_SPRITE_ID);
-                        break;
-
-                    case VULNERABILITY:
-                        splashSpellWidgetDestination = getWidgetDestinationForSpell(VULERABILITY_SPRITE_ID);
-                        break;
-
-                    case ENFEEBLE:
-                        splashSpellWidgetDestination = getWidgetDestinationForSpell(ENFEEBLE_SPRITE_ID);
-                        break;
-
-                    case STUN:
-                        splashSpellWidgetDestination = getWidgetDestinationForSpell(STUN_SPRITE_ID);
-                        break;
-
-                    default:
-                        throwIllegalStateException("hit default case in splashing spell");
-                }
-            }
-            else{
-                throwIllegalStateException("hostScriptReference is null");
-            }
-        }
-    }
-
-    //meant to be called once at start of script to get mouse hover destinations after stunning or alching
-    private static void setHighAlchWidgetDestination(){
-        hostScriptReference.getMagic().open();
-        if(splashSpellWidgetDestination == null){
-            if(hostScriptReference != null){
-                highAlchWidgetDestination = getWidgetDestinationForSpell(HIGH_ALCH_SPRITE_ID);
-            }
-            else{
-                throwIllegalStateException("hostScriptReference is null");
-            }
-        }
-    }
-
-    //meant to be called once at start of script to get mouse hover destinations after stunning or alching
-    private static WidgetDestination getWidgetDestinationForSpell(int spellSpriteID){
+    //meant to be called once at start of script to get mouse hover destinations for stunning or alching
+    public static WidgetDestination getWidgetDestinationForSpell(int spellSpriteID){
         hostScriptReference.getMagic().open();
         int widgetErrorCounter = 0;
         List<RS2Widget> widgetList = hostScriptReference.getWidgets().containingSprite(NORMAL_SPELLBOOK_ROOT_ID, spellSpriteID);
@@ -136,31 +100,19 @@ public class PublicStaticFinalConstants {
         }
 
         else{
-            throwIllegalStateException("failed 5 times to query widget, got " +widgetList.size()+ " RS2Widgets when querying spellSpriteID: " + spellSpriteID + "\ntry restarting the script as this may be a client error");
+            throwIllegalStateException("failed 5 times to query widget, got " +widgetList.size()+ " RS2Widgets when querying spellSpriteID: " + spellSpriteID + "\nthis may be because you do not have runes to cast this spell");
             return null;
         }
     }
 
     //for errors
     public static void throwIllegalStateException(String msg){
-        hostScriptReference.stop(false);
+        hostScriptReference.stop();
         throw new IllegalStateException(msg);
-    }
-
-    public static void setUserSettings(UserSelectedResults results){
-        PublicStaticFinalConstants.targetNPC = results.getNpcID();
-        PublicStaticFinalConstants.targetItem = results.getItemID();
-        PublicStaticFinalConstants.splashingSpell = results.getSplashingSpell();
-
-        setSplashSpellWidgetDestination();
-        setHighAlchWidgetDestination();
     }
 
     public static void setHostScriptReference(Script ref){
         hostScriptReference = ref;
     }
 
-    public static void setTotalCastableSpells(int num){
-        totalCastableSpells = num;
-    }
 }

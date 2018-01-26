@@ -85,7 +85,7 @@ public class AlchErrorNode implements ExecutableNode{
 
     @Override
     public String getStatus() {
-        return "Alching Antiban";
+        return NODE_STATUS;
     }
 
 }

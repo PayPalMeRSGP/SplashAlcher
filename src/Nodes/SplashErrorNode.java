@@ -72,7 +72,7 @@ public class SplashErrorNode implements ExecutableNode {
 
     @Override
     public String getStatus() {
-        return "Splash Antiban";
+        return NODE_STATUS;
     }
 
 }

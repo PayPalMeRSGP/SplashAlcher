@@ -1,10 +1,12 @@
 package ScriptClasses;
 
 import GUI.SwingGUI;
+import GUI.UserSelectedResults;
 import Nodes.AlchErrorNode;
 import Nodes.AlchNode;
 import Nodes.SplashErrorNode;
 import Nodes.SplashNode;
+import org.osbot.Al;
 import org.osbot.rs07.api.Inventory;
 
 import org.osbot.rs07.api.ui.Message;
@@ -23,7 +25,7 @@ import java.util.List;
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
 
-@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.4, logo = "")
+@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
 public class MainScript extends Script implements MouseListener, MouseMotionListener, MessageListener{
 
     private NodeExecutor executor;
@@ -95,7 +97,8 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
         this.bot.addMessageListener(this);
 
         //start gui, upon exit, user arguments will become set
-        SwingGUI gui = new SwingGUI();
+        UserSelectedResults results = new UserSelectedResults();
+        SwingGUI gui = new SwingGUI(results); //results object is modified by SwingGUI class
         try{
             while(gui.isVisable()){
                 sleep(500);
@@ -106,18 +109,27 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
         }
 
         //prepare graph for main loop execution
-        executor = new NodeExecutor(AlchNode.getAlchNodeInstance());
-        executor.addEdgeToNode(AlchNode.getAlchNodeInstance(), SplashNode.getSplashNodeInstance(), 1);
-        executor.addEdgeToNode(SplashNode.getSplashNodeInstance(), AlchNode.getAlchNodeInstance(), 95);
-        executor.addEdgeToNode(SplashNode.getSplashNodeInstance(), AlchErrorNode.getAlchErrorNodeInstance(), 5);
+        if(results.isParametersSet()){
+            AlchNode alch = new AlchNode(results.getItemID(), this);
+            SplashNode splash = new SplashNode(results.getSplashingSpell(), results.getNpcID(), this);
+            AlchErrorNode alchError = AlchErrorNode.getAlchErrorNodeInstance();
 
-        executor.addEdgeToNode(SplashErrorNode.getSplashErrorNodeInstance(), AlchNode.getAlchNodeInstance(), 1);
-        executor.addEdgeToNode(AlchErrorNode.getAlchErrorNodeInstance(), SplashNode.getSplashNodeInstance(), 1);
+            executor = new NodeExecutor(alch);
+            executor.addEdgeToNode(alch, splash, 1);
+            executor.addEdgeToNode(splash, alch, 95);
+            executor.addEdgeToNode(splash, alchError, 5);
+            executor.addEdgeToNode(alchError, splash, 1);
+
+            startTime = System.currentTimeMillis();
+            getExperienceTracker().start(Skill.MAGIC);
+            getBot().addPainter(MainScript.this);
+        }
+        else{
+            PublicStaticFinalConstants.throwIllegalStateException("did not recieve user arguements from GUI , stopping script");
+            stop();
+        }
 
 
-        startTime = System.currentTimeMillis();
-        getExperienceTracker().start(Skill.MAGIC);
-        getBot().addPainter(MainScript.this);
     }
 
     @Override

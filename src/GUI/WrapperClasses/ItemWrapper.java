@@ -1,4 +1,4 @@
-package ScriptClasses.WrapperClasses;
+package GUI.WrapperClasses;
 
 import org.osbot.rs07.api.model.Item;
 
