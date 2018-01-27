@@ -110,14 +110,21 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
             IdleAntiban antiban = new IdleAntiban(this);
 
             executor = new GraphBasedNodeExecutor(alch);
+            //99% to transition to splash, 1% to do generic antiban
             executor.addEdgeToNode(alch, splash, 99);
             executor.addEdgeToNode(alch, antiban, 1);
+
+            //99% to transition to alch, 4% to do an alching error, 1% to generic antiban
             executor.addEdgeToNode(splash, alch, 95);
-            executor.addEdgeToNode(splash, antiban, 1);
             executor.addEdgeToNode(splash, alchError, 4);
-            executor.addEdgeToNode(alchError, splash, 1);
+            executor.addEdgeToNode(splash, antiban, 1);
+
+            //after generic antiban, 50% to either alch or splash
             executor.addEdgeToNode(antiban, alch, 50);
             executor.addEdgeToNode(antiban, splash, 50);
+
+            //100% to splash after alch error
+            executor.addEdgeToNode(alchError, splash, 1);
 
             startTime = System.currentTimeMillis();
             getExperienceTracker().start(Skill.MAGIC);
