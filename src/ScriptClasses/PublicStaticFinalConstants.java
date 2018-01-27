@@ -12,8 +12,6 @@ import java.util.Random;
 public class PublicStaticFinalConstants {
     public static final String SCRIPT_NAME = "Splash_Alcher";
     public static final int RS_GAME_TICK_MS = 603;
-    public static final double BETWEEN_ALCH_STDDEV_MS = 20;
-    public static final double BETWEEN_ALCH_MEAN_MS = 215;
 
     //used to obtain widget destinations
     public static final int NORMAL_SPELLBOOK_ROOT_ID = 218;
@@ -33,11 +31,6 @@ public class PublicStaticFinalConstants {
     public static final Point STUN_UPPER_LEFT_BOUND = new Point(613, 417);
     public static final Point STUN_LOWER_RIGHT_BOUND = new Point(626, 431);
 
-    //for antiban
-    public static final Point EARTH_BLAST_UPPER_LEFT_BOUND = new Point(686,322);
-    public static final Point EARTH_BLAST_LOWER_RIGHT_BOUND = new Point(700,336);
-    public static final Point ALCH_NOTHING_UPPER_LEFT_BOUND = new Point(721,319);
-    public static final Point ALCH_NOTHING_LOWER_RIGHT_BOUND = new Point(725,337);
 
     //queried from user
     public static int targetNPC;

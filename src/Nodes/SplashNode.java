@@ -34,11 +34,21 @@ public class SplashNode implements ExecutableNode{
         hoverOverSplashSpell();
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
         NPC npc = PublicStaticFinalConstants.hostScriptReference.getNpcs().closest(targetNPCID);
-        waitForMagicTab();
-        if(!m.castSpellOnEntity(splashingSpell, npc)){ //sometimes client is unable to find the target NPC, usually this is fixed on the next onLoop call
-            PublicStaticFinalConstants.hostScriptReference.log("error: could not find npc");
-            return 0;
+        if(m.isSpellSelected()){ //failsafe, if a spell is selected other spells cannot be cast.
+            m.deselectSpell();
         }
+        waitForMagicTab();
+
+        int failcount = 0;
+        while(!m.castSpellOnEntity(splashingSpell, npc)){
+            failcount++;
+            hostScriptReference.log("error: could not find npc");
+            if(failcount > 10){
+                hostScriptReference.log("error: failed to find npc over 10 times, stopping script");
+                hostScriptReference.stop();
+            }
+        }
+
         if(PublicStaticFinalConstants.hostScriptReference instanceof MainScript){
             ((MainScript) PublicStaticFinalConstants.hostScriptReference).incrementSpellCycles();
         }
@@ -56,13 +66,16 @@ public class SplashNode implements ExecutableNode{
         }
     }
 
-    private void waitForMagicTab() throws InterruptedException {
-        new ConditionalSleep(7000, 250) {
+    private void waitForMagicTab(){
+        boolean magicTabOpen = new ConditionalSleep(7000, 250) {
             @Override
-            public boolean condition() throws InterruptedException {
+            public boolean condition(){
                 return hostScriptReference.getTabs().getOpen() == Tab.MAGIC;
             }
         }.sleep();
+        if(!magicTabOpen){
+            hostScriptReference.getTabs().open(Tab.MAGIC);
+        }
     }
 
     private void setScriptStatus(){

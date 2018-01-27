@@ -9,10 +9,14 @@ import org.osbot.rs07.input.mouse.WidgetDestination;
 import org.osbot.rs07.script.MethodProvider;
 import org.osbot.rs07.script.Script;
 
+import java.awt.*;
+
 public class AlchNode implements ExecutableNode{
 
     private final static String NODE_STATUS = "Alching";
-    public static final int HIGH_ALCH_SPRITE_ID = 41;
+    private static final int HIGH_ALCH_SPRITE_ID = 41;
+    public static final double BETWEEN_ALCH_STDDEV_MS = 20;
+    public static final double BETWEEN_ALCH_MEAN_MS = 215;
 
     private int alchingItemID;
     private WidgetDestination highAlchWidgetDestination;
@@ -36,14 +40,24 @@ public class AlchNode implements ExecutableNode{
 
     @Override
     public int executeNodeAction() throws InterruptedException {
+
         setScriptStatus();
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
-        m.hoverSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
-        if(!m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){ //sometimes this will fail, but the next onLoop call should fix
-            PublicStaticFinalConstants.hostScriptReference.log("error: could not find high alch");
-            return 0;
+        if(m.isSpellSelected()){ //failsafe, if a spell is selected other spells cannot be cast.
+            m.deselectSpell();
         }
-        MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(PublicStaticFinalConstants.BETWEEN_ALCH_MEAN_MS, PublicStaticFinalConstants.BETWEEN_ALCH_STDDEV_MS));
+        m.hoverSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY);
+
+        int failCount = 0;
+        while(!m.castSpell(Spells.NormalSpells.HIGH_LEVEL_ALCHEMY)){
+            failCount++;
+            PublicStaticFinalConstants.hostScriptReference.log("error: could not cast high alch, failcount: " + failCount);
+            if(failCount > 10){
+                hostScriptReference.log("could not cast high alch over 10 times, stopping script.");
+                hostScriptReference.stop();
+            }
+        }
+        MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(BETWEEN_ALCH_MEAN_MS, BETWEEN_ALCH_STDDEV_MS));
         if(m.isSpellSelected() && m.getSelectedSpellName().equals("High Level Alchemy")){
             Inventory inv = PublicStaticFinalConstants.hostScriptReference.getInventory();
             if(inv.contains(alchingItemID)){

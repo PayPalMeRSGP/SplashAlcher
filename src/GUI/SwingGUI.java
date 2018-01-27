@@ -254,7 +254,7 @@ public class SwingGUI {
         return new Vector<>();
     }
 
-    private void closeAndStopScript(){
+    public void closeAndStopScript(){
         mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         if(PublicStaticFinalConstants.hostScriptReference != null){
             PublicStaticFinalConstants.hostScriptReference.stop(false);

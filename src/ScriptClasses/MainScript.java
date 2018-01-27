@@ -106,7 +106,7 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
         if(results.isParametersSet()){
             AlchNode alch = new AlchNode(results.getItemID(), this);
             SplashNode splash = new SplashNode(results.getSplashingSpell(), results.getNpcID(), this);
-            AlchErrorNode alchError = AlchErrorNode.getAlchErrorNodeInstance();
+            AlchErrorNode alchError = new AlchErrorNode(this);
             IdleAntiban antiban = new IdleAntiban(this);
 
             executor = new GraphBasedNodeExecutor(alch);
