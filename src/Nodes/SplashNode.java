@@ -19,12 +19,14 @@ public class SplashNode implements ExecutableNode{
     private Spells.NormalSpells splashingSpell;
     private WidgetDestination splashSpellWidgetDestination;
     private int targetNPCID;
+    private boolean splashOnly;
 
-    public SplashNode(Spells.NormalSpells splashingSpell, int targetNPCID, Script hostScriptReference){
+    public SplashNode(Spells.NormalSpells splashingSpell, int targetNPCID, boolean splashOnly, Script hostScriptReference){
         this.splashingSpell = splashingSpell;
         this.splashSpellWidgetDestination = PublicStaticFinalConstants.getSplashSpellWidgetDestination(splashingSpell);
         this.hostScriptReference = hostScriptReference;
         this.targetNPCID = targetNPCID;
+        this.splashOnly = splashOnly;
 
     }
 
@@ -32,6 +34,9 @@ public class SplashNode implements ExecutableNode{
     public int executeNodeAction() throws InterruptedException {
         setScriptStatus();
         hoverOverSplashSpell();
+        if(splashOnly){
+            MethodProvider.sleep(PublicStaticFinalConstants.randomNormalDist(PublicStaticFinalConstants.RS_GAME_TICK_MS*4, 600));
+        }
         Magic m = PublicStaticFinalConstants.hostScriptReference.getMagic();
         NPC npc = PublicStaticFinalConstants.hostScriptReference.getNpcs().closest(targetNPCID);
         if(m.isSpellSelected()){ //failsafe, if a spell is selected other spells cannot be cast.
@@ -52,6 +57,7 @@ public class SplashNode implements ExecutableNode{
         if(PublicStaticFinalConstants.hostScriptReference instanceof MainScript){
             ((MainScript) PublicStaticFinalConstants.hostScriptReference).incrementSpellCycles();
         }
+
         return 0;
 
     }

@@ -19,7 +19,7 @@ import java.util.List;
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
 
-@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
+@ScriptManifest(author = "PayPalMeRSGP", name = "0", info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
 public class MainScript extends Script implements MouseListener, MouseMotionListener, MessageListener{
 
     private GraphBasedNodeExecutor executor;
@@ -104,27 +104,39 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
         //prepare graph for main loop execution
         if(results.isParametersSet()){
-            AlchNode alch = new AlchNode(results.getItemID(), this);
-            SplashNode splash = new SplashNode(results.getSplashingSpell(), results.getNpcID(), this);
-            AlchErrorNode alchError = new AlchErrorNode(this);
-            IdleAntiban antiban = new IdleAntiban(this);
+            //set up graph differently based on if user is only splashing or not
+            if(results.isSplashOnly()){
+                SplashNode splash = new SplashNode(results.getSplashingSpell(), results.getNpcID(), true, this);
+                IdleAntiban antiban = new IdleAntiban(this);
+                executor = new GraphBasedNodeExecutor(splash);
 
-            executor = new GraphBasedNodeExecutor(alch);
-            //99% to transition to splash, 1% to do generic antiban
-            executor.addEdgeToNode(alch, splash, 99);
-            executor.addEdgeToNode(alch, antiban, 1);
+                executor.addEdgeToNode(splash, splash, 99);
+                executor.addEdgeToNode(splash, antiban, 1);
+                executor.addEdgeToNode(antiban, splash, 1);
+            }
+            else{
+                AlchNode alch = new AlchNode(results.getItemID(), this);
+                SplashNode splash = new SplashNode(results.getSplashingSpell(), results.getNpcID(), false, this);
+                AlchErrorNode alchError = new AlchErrorNode(this);
+                IdleAntiban antiban = new IdleAntiban(this);
 
-            //99% to transition to alch, 4% to do an alching error, 1% to generic antiban
-            executor.addEdgeToNode(splash, alch, 95);
-            executor.addEdgeToNode(splash, alchError, 4);
-            executor.addEdgeToNode(splash, antiban, 1);
+                executor = new GraphBasedNodeExecutor(alch);
+                //99% to transition to splash, 1% to do generic antiban
+                executor.addEdgeToNode(alch, splash, 99);
+                executor.addEdgeToNode(alch, antiban, 1);
 
-            //after generic antiban, 50% to either alch or splash
-            executor.addEdgeToNode(antiban, alch, 50);
-            executor.addEdgeToNode(antiban, splash, 50);
+                //99% to transition to alch, 4% to do an alching error, 1% to generic antiban
+                executor.addEdgeToNode(splash, alch, 95);
+                executor.addEdgeToNode(splash, alchError, 4);
+                executor.addEdgeToNode(splash, antiban, 1);
 
-            //100% to splash after alch error
-            executor.addEdgeToNode(alchError, splash, 1);
+                //after generic antiban, 50% to either alch or splash
+                executor.addEdgeToNode(antiban, alch, 50);
+                executor.addEdgeToNode(antiban, splash, 50);
+
+                //100% to splash after alch error
+                executor.addEdgeToNode(alchError, splash, 1);
+            }
 
             startTime = System.currentTimeMillis();
             getExperienceTracker().start(Skill.MAGIC);

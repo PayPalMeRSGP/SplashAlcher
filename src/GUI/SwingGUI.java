@@ -38,6 +38,7 @@ public class SwingGUI {
 
     private JComboBox<NPCWrapper> dropDownNPCs;
     private JComboBox<ItemWrapper> dropDownItems;
+    private JCheckBox splashOnlyCheckbox;
     private JComboBox<Spells.NormalSpells> dropDownSplashingSpells;
 
     private boolean isVisable;
@@ -87,7 +88,7 @@ public class SwingGUI {
         labelDropDownAndRefreshHolder.setLayout(new BoxLayout(labelDropDownAndRefreshHolder, BoxLayout.X_AXIS));
         JLabel targetSpellLabel = new JLabel("splashing spell");
         JPanel dropDownHolder = new JPanel();
-
+        splashOnlyCheckbox = new JCheckBox("splash only", false);
         Spells.NormalSpells[] spells = {Spells.NormalSpells.CURSE, Spells.NormalSpells.VULNERABILITY, Spells.NormalSpells.ENFEEBLE, Spells.NormalSpells.STUN};
 
         dropDownSplashingSpells = new JComboBox<>(spells);
@@ -96,6 +97,7 @@ public class SwingGUI {
 
         labelDropDownAndRefreshHolder.add(targetSpellLabel);
         labelDropDownAndRefreshHolder.add(dropDownHolder);
+        labelDropDownAndRefreshHolder.add(splashOnlyCheckbox);
         labelDropDownAndRefreshHolder.add(Box.createRigidArea(new Dimension(50,0)));
 
         mainPanel.add(labelDropDownAndRefreshHolder);
@@ -210,7 +212,7 @@ public class SwingGUI {
                     assert item != null;
                     assert spell != null;
 
-                    results.setParameters(npc.getItemID(), item.getItemID(), spell);
+                    results.setParameters(npc.getItemID(), item.getItemID(), spell, splashOnlyCheckbox.isSelected());
 
                     isVisable = false;
                     mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
