@@ -10,6 +10,8 @@ import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.listener.MessageListener;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
+import org.w3c.dom.css.Rect;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -19,21 +21,15 @@ import java.util.List;
 import static ScriptClasses.PublicStaticFinalConstants.SCRIPT_NAME;
 
 
-@ScriptManifest(author = "PayPalMeRSGP", name = "0", info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
-public class MainScript extends Script implements MouseListener, MouseMotionListener, MessageListener{
+@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
+public class MainScript extends Script implements MessageListener{
 
     private GraphBasedNodeExecutor executor;
     private long startTime;
     private int spellCycles = 0;
     private String scriptStatus = "";
 
-    //for draggable paint
-    private int xOffset = 0;
-    private int yOffset = 0;
-    private int paintRectangleTopLeftX = 315;
-    private int paintRectangleTopLeftY = 0;
-    private Rectangle paintArea = new Rectangle(paintRectangleTopLeftX, paintRectangleTopLeftY, 200, 115);
-    private boolean movingPaint = false;
+    private DraggablePaintHandler paintHandler;
 
     @Override
     public void onStart() throws InterruptedException {
@@ -50,13 +46,14 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
     @Override
     public void onExit() throws InterruptedException {
         super.onExit();
-        this.bot.removeMouseListener(this);
-        this.bot.getCanvas().removeMouseMotionListener(this);
+        this.bot.removeMouseListener(paintHandler);
     }
 
     @Override
     public void onPaint(Graphics2D g) {
         super.onPaint(g);
+
+        Rectangle paintArea = paintHandler.getPaintArea();
         long runTime = System.currentTimeMillis() - startTime;
         int gainedXp = this.getExperienceTracker().getGainedXP(Skill.MAGIC);
         int XPH = this.getExperienceTracker().getGainedXPPerHour(Skill.MAGIC);
@@ -83,10 +80,10 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
     }
 
-    private void setUp() throws InterruptedException {
+    private void setUp() {
         //for draggable paint
-        this.bot.addMouseListener(this);
-        this.bot.getCanvas().addMouseMotionListener(this);
+        paintHandler = new DraggablePaintHandler();
+        this.bot.addMouseListener(paintHandler);
         PublicStaticFinalConstants.setHostScriptReference(this);
         this.bot.addMessageListener(this);
 
@@ -179,53 +176,6 @@ public class MainScript extends Script implements MouseListener, MouseMotionList
 
     public void setScriptStatus(String scriptStatus) {
         this.scriptStatus = scriptStatus;
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        //not used
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        Point clickPt = e.getPoint();
-        if(paintArea.contains(clickPt)){
-            movingPaint = true;
-            xOffset = clickPt.x - paintArea.x;
-            yOffset = clickPt.y - paintArea.y;
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        movingPaint = false;
-        xOffset = 0;
-        yOffset = 0;
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        //not used
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        //not used
-    }
-
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        if(movingPaint){
-            Point mousePos = e.getPoint();
-            paintArea.x = mousePos.x - xOffset;
-            paintArea.y = mousePos.y - yOffset;
-        }
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        //not used
     }
 
     private void debugWidgets(){
