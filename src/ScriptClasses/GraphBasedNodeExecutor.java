@@ -70,7 +70,7 @@ public class GraphBasedNodeExecutor {
         if(current != null){
             LinkedList<NodeEdge> edges = adjMap.get(current);
             if(edges.size() == 0){
-                PublicStaticFinalConstants.hostScriptReference.log("WARN: node: " + current.getClass().getCanonicalName() + " has no outgoing edges! This node will be executed again continuously!");
+
                 return;
             }
             int combinedWeight = edges.stream().mapToInt(edge -> edge.edgeExecutionWeight).sum();

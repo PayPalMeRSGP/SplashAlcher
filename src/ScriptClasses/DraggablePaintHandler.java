@@ -23,6 +23,7 @@ public class DraggablePaintHandler extends BotMouseListener {
                     movingPaint = true;
                     xOffset = clickPt.x - paintArea.x;
                     yOffset = clickPt.y - paintArea.y;
+                    mouseEvent.consume();
                 }
                 break;
 
@@ -33,7 +34,7 @@ public class DraggablePaintHandler extends BotMouseListener {
 
                 break;
         }
-        mouseEvent.consume();
+
 
     }
 

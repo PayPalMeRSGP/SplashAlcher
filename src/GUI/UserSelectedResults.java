@@ -5,12 +5,12 @@ import org.osbot.rs07.api.ui.Spells;
 public class UserSelectedResults {
     private int npcID;
     private int itemID;
-    private Spells.NormalSpells splashingSpell;
+    private SwingGUI.SplashingSpellTypes splashingSpell;
     private boolean splashOnly;
     private boolean parametersSet = false;
 
 
-    public void setParameters(int npcID, int itemID, Spells.NormalSpells splashingSpell, boolean splashOnly) {
+    public void setParameters(int npcID, int itemID, SwingGUI.SplashingSpellTypes splashingSpell, boolean splashOnly) {
         this.npcID = npcID;
         this.itemID = itemID;
         this.splashingSpell = splashingSpell;
@@ -26,7 +26,7 @@ public class UserSelectedResults {
         return itemID;
     }
 
-    public Spells.NormalSpells getSplashingSpell() {
+    public SwingGUI.SplashingSpellTypes getSplashingSpell() {
         return splashingSpell;
     }
 
@@ -36,5 +36,14 @@ public class UserSelectedResults {
 
     public boolean isParametersSet() {
         return parametersSet;
+    }
+
+    @Override
+    public String toString() {
+        return  "USER_SELECTED_RESULTS: " +
+                "\nsplashing spell: " + splashingSpell +
+                "\nsplashing target: " + npcID +
+                "\nsplashing Only: " + splashOnly +
+                "\nalching target: " + itemID;
     }
 }

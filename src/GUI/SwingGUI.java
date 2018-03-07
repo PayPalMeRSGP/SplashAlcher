@@ -2,7 +2,7 @@ package GUI;
 
 import GUI.WrapperClasses.ItemWrapper;
 import GUI.WrapperClasses.NPCWrapper;
-import ScriptClasses.PublicStaticFinalConstants;
+import ScriptClasses.Statics;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Spells;
@@ -22,9 +22,9 @@ public class SwingGUI {
     private final JFrame mainFrame;
     private final JPanel mainPanel;
     private static final String instructions =
-            "Select a target NPC and item. Refresh buttons re-polls " +
-            "\nsurroundings and inventory for new NPC targets and " +
-            "\ninventory items." +
+            "BODY RUNE SPELLS and SOUL RUNE SPELLS automatically selects the highest lvl debuff spell" +
+            "\nto cast." +
+            "\nThe script is also progressive, upon getting the necessary level for a higher debuff spell, it switches to it." +
             "\n\nEnsure that you are in the normal spellbook." +
             "\n\nRECOMMENDED: place the item to alch under where the \nalching icon is in the spellbook tab.";
 
@@ -39,7 +39,11 @@ public class SwingGUI {
     private JComboBox<NPCWrapper> dropDownNPCs;
     private JComboBox<ItemWrapper> dropDownItems;
     private JCheckBox splashOnlyCheckbox;
-    private JComboBox<Spells.NormalSpells> dropDownSplashingSpells;
+
+    private JComboBox<SplashingSpellTypes> dropDownSplashingSpells;
+    public enum SplashingSpellTypes {
+        BODY_RUNE_SPELLS, SOUL_RUNE_SPELLS
+    }
 
     private boolean isVisable;
 
@@ -47,7 +51,7 @@ public class SwingGUI {
 
     public SwingGUI(UserSelectedResults results){
         this.results = results;
-        mainFrame = new JFrame(PublicStaticFinalConstants.SCRIPT_NAME);
+        mainFrame = new JFrame(Statics.SCRIPT_NAME);
         mainFrame.setSize(600, 400);
 
         mainPanel = new JPanel();
@@ -89,9 +93,8 @@ public class SwingGUI {
         JLabel targetSpellLabel = new JLabel("splashing spell");
         JPanel dropDownHolder = new JPanel();
         splashOnlyCheckbox = new JCheckBox("splash only", false);
-        Spells.NormalSpells[] spells = {Spells.NormalSpells.CURSE, Spells.NormalSpells.VULNERABILITY, Spells.NormalSpells.ENFEEBLE, Spells.NormalSpells.STUN};
 
-        dropDownSplashingSpells = new JComboBox<>(spells);
+        dropDownSplashingSpells = new JComboBox<>(SplashingSpellTypes.values());
         dropDownSplashingSpells.setSelectedIndex(0);
         dropDownHolder.add(dropDownSplashingSpells);
 
@@ -110,7 +113,7 @@ public class SwingGUI {
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh NPCs");
 
-        if(PublicStaticFinalConstants.hostScriptReference != null){
+        if(Statics.hostScriptReference != null){
             nearbyNPCs = getNPCs();
             dropDownNPCs = new JComboBox<>(nearbyNPCs);
         }
@@ -139,7 +142,7 @@ public class SwingGUI {
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh Items");
 
-        if(PublicStaticFinalConstants.hostScriptReference != null){
+        if(Statics.hostScriptReference != null){
             inventoryItems = new Vector<>(getItems());
             dropDownItems = new JComboBox<>(inventoryItems);
         }
@@ -185,13 +188,13 @@ public class SwingGUI {
             String command = e.getActionCommand();
             switch(command){
                 case REFRESH_ITEM:
-                    if(PublicStaticFinalConstants.hostScriptReference != null){
+                    if(Statics.hostScriptReference != null){
                         inventoryItems = new Vector<>(getItems());
                         dropDownItems = new JComboBox<>(inventoryItems);
                     }
                     break;
                 case REFRESH_NPC:
-                    if(PublicStaticFinalConstants.hostScriptReference != null){
+                    if(Statics.hostScriptReference != null){
                         nearbyNPCs = new Vector<>();
                         dropDownNPCs = new JComboBox<>(nearbyNPCs);
                     }
@@ -207,7 +210,7 @@ public class SwingGUI {
                         npc = (NPCWrapper) dropDownNPCs.getSelectedItem();
                     }
 
-                    Spells.NormalSpells spell = (Spells.NormalSpells) dropDownSplashingSpells.getSelectedItem();
+                    SplashingSpellTypes spell = (SplashingSpellTypes) dropDownSplashingSpells.getSelectedItem();
                     assert npc != null;
                     assert item != null;
                     assert spell != null;
@@ -226,8 +229,8 @@ public class SwingGUI {
     }
 
     private Vector<NPCWrapper> getNPCs(){
-        if(PublicStaticFinalConstants.hostScriptReference != null){
-            List<NPC> npcs = PublicStaticFinalConstants.hostScriptReference.getNpcs().getAll();
+        if(Statics.hostScriptReference != null){
+            List<NPC> npcs = Statics.hostScriptReference.getNpcs().getAll();
             Vector<NPCWrapper> wrappedNPCs = new Vector<>();
             for(NPC npc: npcs){
                 if(npc == null){
@@ -242,8 +245,8 @@ public class SwingGUI {
     }
 
     private Vector<ItemWrapper> getItems(){
-        if(PublicStaticFinalConstants.hostScriptReference != null){
-            List<Item> items = Arrays.asList(PublicStaticFinalConstants.hostScriptReference.getInventory().getItems());
+        if(Statics.hostScriptReference != null){
+            List<Item> items = Arrays.asList(Statics.hostScriptReference.getInventory().getItems());
             Vector<ItemWrapper> wrappedItems = new Vector<>();
             for(Item item: items){
                 if(item == null){
@@ -258,8 +261,8 @@ public class SwingGUI {
 
     public void closeAndStopScript(){
         mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        if(PublicStaticFinalConstants.hostScriptReference != null){
-            PublicStaticFinalConstants.hostScriptReference.stop(false);
+        if(Statics.hostScriptReference != null){
+            Statics.hostScriptReference.stop(false);
         }
 
         SwingGUI.this.mainFrame.dispose();
