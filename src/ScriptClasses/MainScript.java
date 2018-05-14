@@ -23,6 +23,7 @@ public class MainScript extends Script implements MessageListener{
     private int spellCycles = 0;
     private String scriptStatus = "";
     private UserSelectedResults results;
+    private static final Color TRANS_GRAY = new Color(156,156,156, 127);
 
     private DraggablePaintHandler paintHandler;
 
@@ -67,7 +68,7 @@ public class MainScript extends Script implements MessageListener{
             g.drawLine(mP.x + 5, mP.y + 5, mP.x - 5, mP.y - 5);
 
             //stats
-            g.setColor(new Color(156,156,156));
+            g.setColor(TRANS_GRAY);
             g.fillRect(paintArea.x, paintArea.y, paintArea.width, paintArea.height);
             g.setColor(new Color(255, 255, 255));
             g.drawString("Current Level: " + formatValue(currentLevel), paintArea.x + 10, paintArea.y + 15);
@@ -77,7 +78,17 @@ public class MainScript extends Script implements MessageListener{
             g.drawString("TTL: " + formatTime(TTL), paintArea.x + 10, paintArea.y + 75);
             g.drawString("runtime: " + formatTime(runTime), paintArea.x + 10, paintArea.y + 90);
             g.drawString("status: " + scriptStatus, paintArea.x + 10, paintArea.y + 105);
+
+            paintReset(g);
         }
+    }
+
+    private void paintReset(Graphics2D g){
+        g.setColor(TRANS_GRAY);
+        Rectangle resetArea = paintHandler.getResetPaint();
+        g.fillRect(resetArea.x, resetArea.y, resetArea.width, resetArea.height);
+        g.setColor(Color.WHITE);
+        g.drawString("Reset Paint", resetArea.x + 10, resetArea.y + 15);
     }
 
     private void setUp() {
@@ -152,7 +163,7 @@ public class MainScript extends Script implements MessageListener{
     public void onMessage(Message msg) throws InterruptedException {
         super.onMessage(msg);
         if(msg.getType() == Message.MessageType.GAME){
-            if(msg.getMessage().toLowerCase().contains("You do not have enough")){
+            if(msg.getMessage().toLowerCase().contains("you do not have enough")){
                 log("received rune shortage msg.");
                 stop();
             }

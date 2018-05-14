@@ -10,7 +10,8 @@ public class DraggablePaintHandler extends BotMouseListener {
 
     private int xOffset = 0;
     private int yOffset = 0;
-    private Rectangle paintArea = new Rectangle(0, 0, 200, 115);
+    private Rectangle paintArea = new Rectangle(0, 220, 225, 115);
+    private final Rectangle resetPaint = new Rectangle(418, 320, 100, 20);
     private boolean movingPaint = false;
 
     @Override
@@ -25,8 +26,10 @@ public class DraggablePaintHandler extends BotMouseListener {
                     yOffset = clickPt.y - paintArea.y;
                     mouseEvent.consume();
                 }
+                else if(resetPaint.contains(clickPt)){
+                    paintArea.setLocation(new Point(0,220));
+                }
                 break;
-
             case MouseEvent.MOUSE_RELEASED:
                 movingPaint = false;
                 xOffset = 0;
@@ -51,6 +54,10 @@ public class DraggablePaintHandler extends BotMouseListener {
 
     public Rectangle getPaintArea() {
         return paintArea;
+    }
+
+    public Rectangle getResetPaint() {
+        return resetPaint;
     }
 
 }

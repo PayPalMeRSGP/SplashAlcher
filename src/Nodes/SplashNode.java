@@ -3,7 +3,6 @@ package Nodes;
 import GUI.SwingGUI;
 import ScriptClasses.MainScript;
 import ScriptClasses.Statics;
-import org.osbot.CON;
 import org.osbot.rs07.api.Magic;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.Skill;
@@ -65,16 +64,17 @@ public class SplashNode implements ExecutableNode{
     public int executeNodeAction() throws InterruptedException {
         setScriptStatus();
         handleProgressiveSpellSwitch();
-        if(hoverOverSplashSpell()){
+        if(hoverOverAndSelectSplashSpell()){
             Magic m = hostScriptReference.getMagic();
-            if(targetNPC == null){
-                targetNPC = hostScriptReference.getNpcs().closest(targetNPCID);
+            targetNPC = hostScriptReference.getNpcs().closest(targetNPCID);
+            if(splashOnly){ //different sleep for splash only
+                MethodProvider.sleep(Statics.randomNormalDist(Statics.RS_GAME_TICK_MS*3, 500));
             }
-            if(splashOnly){ //special sleep for splash only, when splash alching, need to immediately alch
-                MethodProvider.sleep(Statics.randomNormalDist(Statics.RS_GAME_TICK_MS*3, 800));
-            }
-            if(m.isSpellSelected()){ //failsafe, if a spell is selected other spells cannot be cast.
+            String selectedSpellName = m.getSelectedSpellName().toLowerCase();
+            String correctSpellName = splashingSpell.name().toLowerCase();
+            if(m.isSpellSelected() && !selectedSpellName.equals(correctSpellName)){ //failsafe, if a spell is selected other spells cannot be cast.
                 m.deselectSpell();
+                Statics.shortRandomSleep();
             }
             waitForMagicTab();
 
@@ -145,9 +145,11 @@ public class SplashNode implements ExecutableNode{
     }
 
 
-    private boolean hoverOverSplashSpell() throws InterruptedException {
+    private boolean hoverOverAndSelectSplashSpell() throws InterruptedException {
         if(splashDestination != null){
-            return hostScriptReference.getMouse().move(splashDestination);
+            if(hostScriptReference.getMouse().move(splashDestination)){
+                return true;
+            }
         }
         Statics.throwIllegalStateException("splashDestination is null");
         return false;

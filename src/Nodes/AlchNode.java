@@ -2,16 +2,13 @@ package Nodes;
 
 import ScriptClasses.MainScript;
 import ScriptClasses.Statics;
-import org.osbot.Me;
 import org.osbot.rs07.api.Inventory;
 import org.osbot.rs07.api.Magic;
 import org.osbot.rs07.api.ui.Spells;
 import org.osbot.rs07.api.ui.Tab;
-import org.osbot.rs07.input.mouse.RectangleDestination;
 import org.osbot.rs07.script.MethodProvider;
 import org.osbot.rs07.script.Script;
 
-import java.awt.*;
 
 public class AlchNode implements ExecutableNode{
 
