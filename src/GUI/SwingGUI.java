@@ -25,9 +25,12 @@ public class SwingGUI {
     private static final String instructions =
             "BODY RUNE SPELLS and SOUL RUNE SPELLS automatically selects the highest lvl debuff spell" +
             "\nto cast." +
-            "\nThe script is also progressive, upon getting the necessary level for a higher debuff spell, it switches to it." +
+            "\nThe script is also progressive, upon getting the necessary level" +
+            "\nfor a higher debuff spell, it switches to it." +
+            "\nHowever this is ONLY TRUE for debuff spells of the same rune type" +
+            "\n(body rune spells vs soul rune spells)" +
             "\n\nEnsure that you are in the normal spellbook." +
-            "\n\nRECOMMENDED: place the item to alch under where the \nalching icon is in the spellbook tab.";
+            "\n\nRECOMMENDED: place the item to alch under where the alching icon is in the spellbook tab.";
 
     private static final String REFRESH_NPC = "REFRESH_NPC";
     private static final String REFRESH_ITEM = "REFRESH_ITEM";
@@ -233,9 +236,10 @@ public class SwingGUI {
 
     private Vector<NPCWrapper> getNPCs(){
         if(script != null){
-            List<NPC> npcs = script.getNpcs().getAll();
+            List<NPC> attackAbleNPCs = script.getNpcs().getAll();
+            attackAbleNPCs.removeIf(n -> !n.isAttackable());
             Vector<NPCWrapper> wrappedNPCs = new Vector<>();
-            for(NPC npc: npcs){
+            for(NPC npc: attackAbleNPCs){
                 if(npc == null){
                     continue;
                 }
@@ -249,7 +253,12 @@ public class SwingGUI {
 
     private Vector<ItemWrapper> getItems(){
         if(script != null){
-            List<Item> items = Arrays.asList(script.getInventory().getItems());
+            Item alchSpotItem = script.getInventory().getItemInSlot(15);
+            List<Item> items = new Vector<>();
+            if(alchSpotItem != null)
+                items.add(alchSpotItem);
+            items.addAll(Arrays.asList(script.getInventory().getItems()));
+
             Vector<ItemWrapper> wrappedItems = new Vector<>();
             for(Item item: items){
                 if(item == null){
