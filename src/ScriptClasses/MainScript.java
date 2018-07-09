@@ -2,8 +2,13 @@ package ScriptClasses;
 
 import GUI.SwingGUI;
 import GUI.UserSelectedResults;
-import Nodes.*;
+import MarkovChain.MarkovNodeExecutor;
 
+import Nodes.Alching.AlchErrorNode;
+import Nodes.Alching.AlchNode;
+import Nodes.Splashing.AbstractSplashNode;
+import Nodes.Splashing.HoverSplashingNPC;
+import Nodes.Splashing.RegularSplash;
 import org.osbot.rs07.api.ui.Message;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.listener.MessageListener;
@@ -12,15 +17,14 @@ import org.osbot.rs07.script.ScriptManifest;
 
 import java.awt.*;
 
-import static ScriptClasses.Statics.SCRIPT_NAME;
-
+import static ScriptClasses.MainScript.SCRIPT_NAME;
 
 @ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
 public class MainScript extends Script implements MessageListener{
 
-    private GraphBasedNodeExecutor executor;
+    public static final String SCRIPT_NAME = "Splash_Alcher";
+    private MarkovNodeExecutor executor;
     private long startTime;
-    private int spellCycles = 0;
     private String scriptStatus = "";
     private UserSelectedResults results;
     private static final Color TRANS_GRAY = new Color(156,156,156, 127);
@@ -36,7 +40,7 @@ public class MainScript extends Script implements MessageListener{
     @Override
     public int onLoop() throws InterruptedException {
         if(executor != null){
-            return executor.executeNodeThenTraverse();
+            return executor.executeThenTraverse();
         }
         return 1000;
     }
@@ -72,12 +76,11 @@ public class MainScript extends Script implements MessageListener{
             g.fillRect(paintArea.x, paintArea.y, paintArea.width, paintArea.height);
             g.setColor(new Color(255, 255, 255));
             g.drawString("Current Level: " + formatValue(currentLevel), paintArea.x + 10, paintArea.y + 15);
-            g.drawString("casted " + spellCycles + " splash and/or alchs", paintArea.x + 10, paintArea.y + 30);
-            g.drawString("gainedXp: " + formatValue(gainedXp), paintArea.x + 10, paintArea.y + 45);
-            g.drawString("XP/H: " + formatValue(XPH), paintArea.x + 10, paintArea.y + 60);
-            g.drawString("TTL: " + formatTime(TTL), paintArea.x + 10, paintArea.y + 75);
-            g.drawString("runtime: " + formatTime(runTime), paintArea.x + 10, paintArea.y + 90);
-            g.drawString("status: " + scriptStatus, paintArea.x + 10, paintArea.y + 105);
+            g.drawString("gainedXp: " + formatValue(gainedXp), paintArea.x + 10, paintArea.y + 30);
+            g.drawString("XP/H: " + formatValue(XPH), paintArea.x + 10, paintArea.y + 45);
+            g.drawString("TTL: " + formatTime(TTL), paintArea.x + 10, paintArea.y + 60);
+            g.drawString("runtime: " + formatTime(runTime), paintArea.x + 10, paintArea.y + 75);
+            g.drawString("status: " + scriptStatus, paintArea.x + 10, paintArea.y + 90);
 
             paintReset(g);
         }
@@ -95,12 +98,11 @@ public class MainScript extends Script implements MessageListener{
         //for draggable paint
         paintHandler = new DraggablePaintHandler();
         this.bot.addMouseListener(paintHandler);
-        Statics.setHostScriptReference(this);
         this.bot.addMessageListener(this);
 
         //start gui, upon exit, user arguments will become set
         results = new UserSelectedResults();
-        SwingGUI gui = new SwingGUI(results); //results object is modified by SwingGUI class
+        SwingGUI gui = new SwingGUI(results, this); //results object is modified by SwingGUI class
         try{
             while(gui.isVisable()){
                 sleep(500);
@@ -110,53 +112,26 @@ public class MainScript extends Script implements MessageListener{
             e.printStackTrace();
         }
 
-        //prepare graph for main loop execution
         if(results.isParametersSet()){
-            //set up graph differently based on if user is only splashing or not
             this.log(results.toString());
-            if(results.isSplashOnly()){
-                ExecutableNode splash = SplashNode.getInstance(results.getSplashingSpell(), results.getNpcID(), true, this);
-                ExecutableNode antiban = IdleAntibanNode.getInstance(this);
-                executor = new GraphBasedNodeExecutor(splash);
-
-                executor.addEdgeToNode(splash, splash, 99);
-                executor.addEdgeToNode(splash, antiban, 1);
-                executor.addEdgeToNode(antiban, splash, 1);
-            }
-            else{
-                ExecutableNode alch = AlchNode.getInstance(results.getItemID(), this);
-                ExecutableNode splash = SplashNode.getInstance(results.getSplashingSpell(), results.getNpcID(), false, this);
-                ExecutableNode alchError = AlchErrorNode.getInstance(this);
-                ExecutableNode antiban = IdleAntibanNode.getInstance(this);
-
-                executor = new GraphBasedNodeExecutor(alch);
-                //99%to splash, 1% to do generic antiban
-                executor.addEdgeToNode(alch, splash, 99);
-                executor.addEdgeToNode(alch, antiban, 1);
-
-                //99% to alch, 4% to do an alching error, 1% to generic antiban
-                executor.addEdgeToNode(splash, alch, 95);
-                executor.addEdgeToNode(splash, alchError, 4);
-                executor.addEdgeToNode(splash, antiban, 1);
-
-                //after generic antiban, 50% to either alch or splash
-                executor.addEdgeToNode(antiban, alch, 50);
-                executor.addEdgeToNode(antiban, splash, 50);
-
-                //100% to splash after alch error
-                executor.addEdgeToNode(alchError, splash, 1);
-            }
+            AlchNode alchNode = new AlchNode(results.getItemID(), this);
+            RegularSplash regSplashNode = new RegularSplash(results.getSplashingSpell(), results.getNpcID(), results.isSplashOnly(), this);
+            HoverSplashingNPC hoverSplashNode = new HoverSplashingNPC(results.getSplashingSpell(), results.getNpcID(), results.isSplashOnly(), this);
+            AlchErrorNode alchErrorNode = new AlchErrorNode(this);
+            executor = new MarkovNodeExecutor(hoverSplashNode, alchNode, alchErrorNode, regSplashNode);
 
             startTime = System.currentTimeMillis();
             getExperienceTracker().start(Skill.MAGIC);
             getBot().addPainter(MainScript.this);
         }
         else{
-            Statics.throwIllegalStateException("did not receive user arguments from GUI , stopping script");
-            stop();
+            log("did not receive user arguments from GUI , stopping script");
+            stop(false);
         }
+    }
 
-
+    public void setScriptStatus(String scriptStatus) {
+        this.scriptStatus = scriptStatus;
     }
 
     @Override
@@ -164,12 +139,12 @@ public class MainScript extends Script implements MessageListener{
         super.onMessage(msg);
         if(msg.getType() == Message.MessageType.GAME){
             if(msg.getMessage().toLowerCase().contains("you do not have enough")){
-                log("received rune shortage msg.");
-                stop();
+                log("stopping reason: received rune shortage msg.");
+                stop(false);
             }
 
             if(msg.getMessage().toLowerCase().contains("someone else")){
-                log("someone else is fighting that NPC. TODO: world hop");
+                log("stopping reason: someone else is fighting that NPC.");
                 stop(false);
             }
         }
@@ -186,13 +161,4 @@ public class MainScript extends Script implements MessageListener{
                 : (l > 1000) ? String.format("%.1fk", ((double) l / 1000))
                 : l + "";
     }
-
-    public void incrementSpellCycles(){
-        this.spellCycles++;
-    }
-
-    public void setScriptStatus(String scriptStatus) {
-        this.scriptStatus = scriptStatus;
-    }
-
 }

@@ -2,10 +2,11 @@ package GUI;
 
 import GUI.WrapperClasses.ItemWrapper;
 import GUI.WrapperClasses.NPCWrapper;
+import ScriptClasses.MainScript;
 import ScriptClasses.Statics;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
-import org.osbot.rs07.api.ui.Spells;
+import org.osbot.rs07.script.Script;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -48,10 +49,12 @@ public class SwingGUI {
     private boolean isVisable;
 
     private UserSelectedResults results;
+    private Script script;
 
-    public SwingGUI(UserSelectedResults results){
+    public SwingGUI(UserSelectedResults results, Script script){
         this.results = results;
-        mainFrame = new JFrame(Statics.SCRIPT_NAME);
+        this.script = script;
+        mainFrame = new JFrame(MainScript.SCRIPT_NAME);
         mainFrame.setSize(600, 400);
 
         mainPanel = new JPanel();
@@ -113,7 +116,7 @@ public class SwingGUI {
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh NPCs");
 
-        if(Statics.hostScriptReference != null){
+        if(script != null){
             nearbyNPCs = getNPCs();
             dropDownNPCs = new JComboBox<>(nearbyNPCs);
         }
@@ -142,7 +145,7 @@ public class SwingGUI {
         JPanel dropDownHolder = new JPanel();
         JButton itemRefreshBtn = new JButton("refresh Items");
 
-        if(Statics.hostScriptReference != null){
+        if(script != null){
             inventoryItems = new Vector<>(getItems());
             dropDownItems = new JComboBox<>(inventoryItems);
         }
@@ -188,13 +191,13 @@ public class SwingGUI {
             String command = e.getActionCommand();
             switch(command){
                 case REFRESH_ITEM:
-                    if(Statics.hostScriptReference != null){
+                    if(script != null){
                         inventoryItems = new Vector<>(getItems());
                         dropDownItems = new JComboBox<>(inventoryItems);
                     }
                     break;
                 case REFRESH_NPC:
-                    if(Statics.hostScriptReference != null){
+                    if(script != null){
                         nearbyNPCs = new Vector<>();
                         dropDownNPCs = new JComboBox<>(nearbyNPCs);
                     }
@@ -229,8 +232,8 @@ public class SwingGUI {
     }
 
     private Vector<NPCWrapper> getNPCs(){
-        if(Statics.hostScriptReference != null){
-            List<NPC> npcs = Statics.hostScriptReference.getNpcs().getAll();
+        if(script != null){
+            List<NPC> npcs = script.getNpcs().getAll();
             Vector<NPCWrapper> wrappedNPCs = new Vector<>();
             for(NPC npc: npcs){
                 if(npc == null){
@@ -245,8 +248,8 @@ public class SwingGUI {
     }
 
     private Vector<ItemWrapper> getItems(){
-        if(Statics.hostScriptReference != null){
-            List<Item> items = Arrays.asList(Statics.hostScriptReference.getInventory().getItems());
+        if(script != null){
+            List<Item> items = Arrays.asList(script.getInventory().getItems());
             Vector<ItemWrapper> wrappedItems = new Vector<>();
             for(Item item: items){
                 if(item == null){
@@ -259,10 +262,10 @@ public class SwingGUI {
         return new Vector<>();
     }
 
-    public void closeAndStopScript(){
+    private void closeAndStopScript(){
         mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        if(Statics.hostScriptReference != null){
-            Statics.hostScriptReference.stop(false);
+        if(script != null){
+            script.stop(false);
         }
 
         SwingGUI.this.mainFrame.dispose();
@@ -270,10 +273,6 @@ public class SwingGUI {
 
     public boolean isVisable() {
         return isVisable;
-    }
-
-    public static void main(String[] args){ //testing gui
-        SwingGUI swingLayoutDemo = new SwingGUI(new UserSelectedResults());
     }
 
 }
