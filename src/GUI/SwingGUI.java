@@ -58,13 +58,12 @@ public class SwingGUI {
         this.results = results;
         this.script = script;
         mainFrame = new JFrame(MainScript.SCRIPT_NAME);
-        mainFrame.setSize(600, 400);
+        mainFrame.setSize(600, 300);
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(25,25,25,25));
 
-        setUpInstructions();
         setUpSplashSpellSelector();
         setUpTargetNPCSelector();
         setUpAlchingItemSelector();
@@ -82,15 +81,6 @@ public class SwingGUI {
 
         isVisable = true;
 
-    }
-
-    private void setUpInstructions(){
-        JTextArea instructions  = new JTextArea(SwingGUI.instructions);
-        instructions.setLineWrap(true);
-        instructions.setEditable(false);
-        instructions.setFocusable(false);
-
-        mainPanel.add(instructions);
     }
 
     private void setUpSplashSpellSelector(){

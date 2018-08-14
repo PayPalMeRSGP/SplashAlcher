@@ -69,9 +69,8 @@ public abstract class AbstractSplashNode implements ExecutableNode {
         if(script.getMagic().castSpellOnEntity(splashingSpell, targetNPC)){
             /*
             Successor nodes handle sleeping.
-            Wanted splashNode/alchNode to handle hovering over respective spell.
-            IMO alchNode should not handle hovering over splashing spell, vice versa for splashNode.
-            Hovering should happen immediately after successful alch/splash. Therefore wait before next node execute should be 0.
+            SplashNode/alchNode handle hovering over respective their spell.
+            Hovering happens immediately after successful alch/splash. Therefore wait before next node execute should be 0.
             */
             return 0;
 

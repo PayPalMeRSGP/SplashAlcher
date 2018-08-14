@@ -2,6 +2,7 @@ package GUI.WrapperClasses;
 
 import org.osbot.rs07.api.model.NPC;
 
+//these wrapper classes are for displaying the proper text in Jcombobox by providing a custom toString method.
 public class NPCWrapper {
     private final NPC npc;
 

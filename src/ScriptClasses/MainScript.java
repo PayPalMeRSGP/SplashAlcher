@@ -6,7 +6,6 @@ import MarkovChain.MarkovNodeExecutor;
 
 import Nodes.Alching.AlchErrorNode;
 import Nodes.Alching.AlchNode;
-import Nodes.Splashing.AbstractSplashNode;
 import Nodes.Splashing.HoverSplashingNPC;
 import Nodes.Splashing.RegularSplash;
 import org.osbot.rs07.api.ui.Message;
@@ -17,12 +16,12 @@ import org.osbot.rs07.script.ScriptManifest;
 
 import java.awt.*;
 
-import static ScriptClasses.MainScript.SCRIPT_NAME;
-
-@ScriptManifest(author = "PayPalMeRSGP", name = SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = 0.5, logo = "https://i.imgur.com/6WL3ad2.png")
+@ScriptManifest(author = "PayPalMeRSGP", name = MainScript.SCRIPT_NAME, info = "splashes a debuff spell while alching for high xph", version = MainScript.VERSION, logo = "https://i.imgur.com/6WL3ad2.png")
 public class MainScript extends Script implements MessageListener{
 
+    public static final double VERSION = 1.0;
     public static final String SCRIPT_NAME = "Splash_Alcher";
+
     private MarkovNodeExecutor executor;
     private long startTime;
     private String scriptStatus = "";
@@ -35,6 +34,10 @@ public class MainScript extends Script implements MessageListener{
     public void onStart() throws InterruptedException {
         super.onStart();
         setUp();
+
+        //ensure a spell is not selected before the script starts, otherwise the script gets stuck.
+        if(getMagic().isSpellSelected())
+            getMagic().deselectSpell();
     }
 
     @Override
@@ -114,10 +117,12 @@ public class MainScript extends Script implements MessageListener{
 
         if(results.isParametersSet()){
             this.log(results.toString());
+            //set up nodes and the node executor.
             AlchNode alchNode = new AlchNode(results.getItemID(), this);
             RegularSplash regSplashNode = new RegularSplash(results.getSplashingSpell(), results.getNpcID(), results.isSplashOnly(), this);
             HoverSplashingNPC hoverSplashNode = new HoverSplashingNPC(results.getSplashingSpell(), results.getNpcID(), results.isSplashOnly(), this);
             AlchErrorNode alchErrorNode = new AlchErrorNode(this);
+            //first argument: hoverSplashNode is the starting node.
             executor = new MarkovNodeExecutor(hoverSplashNode, alchNode, alchErrorNode, regSplashNode);
 
             startTime = System.currentTimeMillis();

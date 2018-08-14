@@ -2,7 +2,7 @@ package GUI.WrapperClasses;
 
 import org.osbot.rs07.api.model.Item;
 
-//these wrapper classes are for displaying the proper text in Jcombobox
+//these wrapper classes are for displaying the proper text in Jcombobox by providing a custom toString method.
 public class ItemWrapper {
     private final Item item;
 
